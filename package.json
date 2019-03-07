@@ -9,7 +9,7 @@
     "clean": "rimraf docs/",
     "build": "npm-run-all -s clean -p build:*",
     "build:iife": "rollup -c",
-    "build:demo": "pug src/index.pug -o docs/",
+    "build:demo": "pug src/demo/index.pug -o docs/",
     "watch": "npm-run-all -s clean -p watch:*",
     "watch:iife": "npm run build:iife -- -w",
     "watch:demo": "npm run build:demo -- -w"
