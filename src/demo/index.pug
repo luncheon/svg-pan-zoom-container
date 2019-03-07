@@ -5,10 +5,18 @@ html
     meta(http-equiv="X-UA-Compatible" content="IE=edge")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     style.
-      html, body, svg { height: 100% }
-      body { margin: 0 }
-      svg { vertical-align: middle }
+      html, body, svg { height: 100%; }
+      body { margin: 8px 16px; }
+      header { display: flex; align-items: center; margin: .5em 0; }
+      h1 { margin: 0; }
+      svg { vertical-align: middle; }
   body
+    header
+      h1 svg-pan-zoom-select
+      a(href="https://github.com/luncheon/svg-pan-zoom-select")
+        img(src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5em; margin-left: 1em; vertical-align: bottom;")
+    p SVG でパン（右ドラッグ）とズーム（ホイール）と選択（左ドラッグ）するやつ（選択は未実装）
+
     div(style="border: 1px solid grey; width: 400px; height: 400px; overflow: hidden; position: relative;")
       include ./sample.svg
       div#zoom-controller(style="position: absolute; right: 10px; bottom: 10px;")
