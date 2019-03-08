@@ -9,31 +9,25 @@ html
       body { margin: 8px 16px; }
       header { display: flex; align-items: center; margin: .5em 0; }
       h1 { margin: 0; }
-      svg { vertical-align: middle; }
   body
     header
-      h1 svg-pan-zoom-select
-      a(href="https://github.com/luncheon/svg-pan-zoom-select")
+      h1 svg-pan-zoom-container
+      a(href="https://github.com/luncheon/svg-pan-zoom-container")
         img(src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5em; margin-left: 1em; vertical-align: bottom;")
-    p SVG でパン（右ドラッグ）とズーム（ホイール）と選択（左ドラッグ）するやつ（選択は未実装）
+    p SVG でパン（ドラッグ）とズーム（ホイール）するやつ
 
-    div(style="border: 1px solid grey; width: 400px; height: 400px; overflow: hidden; position: relative;")
+    div(data-svg-pan-zoom-container style="border: 1px solid grey; width: 400px; height: 400px;")
       include ./sample.svg
-      div#zoom-controller(style="position: absolute; right: 10px; bottom: 10px;")
-        input#scale(type="number" value="100")
-        button#reset(type="button") リセット
-    script(src="svg-pan-zoom-select.js")
+    div#zoom-controller
+      input#scale(type="number" value="100")
+      button#reset(type="button" onclick="svgPanZoomContainer.reset(document.querySelector('[data-svg-pan-zoom-container]'))") リセット
+    script(src="svg-pan-zoom-container.js")
     script.
       (function () {
-        const controller = svgPanZoomSelect(
-          document.getElementsByTagName('svg')[0],
-          {
-            onChange: function (c) {
-              document.getElementById('scale').value = c.scale * 100
-            }
-          },
-        )
-        document.getElementById('reset').addEventListener('click', function () {
-          controller.reset()
-        })
+        const container = document.querySelector('[data-svg-pan-zoom-container]')
+        new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            document.getElementById('scale').value = svgPanZoomContainer.getScale(mutation.target.parentElement) * 100
+          })
+        }).observe(container.firstElementChild, { attributes: true, attributeFilter: ['transform'] })
       })()
