@@ -1,8 +1,8 @@
 {
   "name": "svg-pan-zoom-container",
   "version": "0.0.0",
-  "description": "",
-  "license": "UNLICENSED",
+  "description": "A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.",
+  "license": "WTFPL",
   "private": true,
   "main": "index.js",
   "scripts": {
