@@ -79,15 +79,12 @@ var svgPanZoomContainer = (function (exports) {
   //# sourceMappingURL=module.js.map
 
   function getScale(container) {
-      return +(container && container.firstElementChild && new DomMatrix(getComputedStyle(container.firstElementChild).transform).a || 1);
+      return +(container && container.getAttribute('data-scale') || 1);
   }
   function setScale(container, value, options) {
       if (options === void 0) { options = {}; }
       var content = container.firstElementChild;
-      var computedStyle = getComputedStyle(content);
-      var transformOrigin = computedStyle.transformOrigin.split(' ').map(parseFloat);
-      var matrix = new DomMatrix(computedStyle.transform);
-      var previousScale = matrix.a;
+      var previousScale = getScale(container);
       var scale = clamp(value, options.minScale || 1, options.maxScale || 10);
       if (scale === previousScale) {
           return;
@@ -98,12 +95,20 @@ var svgPanZoomContainer = (function (exports) {
       var previousClientRect = content.getBoundingClientRect();
       var previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left;
       var previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top;
-      matrix = matrix.translate.apply(matrix, transformOrigin.map(minus));
-      matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio;
-      matrix.a = scale;
-      matrix = matrix.translate.apply(matrix, transformOrigin);
-      content.style.transform = matrix;
-      content.setAttribute('transform', matrix);
+      if (options.scalingProperty === 'transform') {
+          var computedStyle = getComputedStyle(content);
+          var transformOrigin = computedStyle.transformOrigin.split(' ').map(parseFloat);
+          var matrix = new DomMatrix(computedStyle.transform);
+          matrix = matrix.translate.apply(matrix, transformOrigin.map(minus));
+          matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio;
+          matrix.a = scale;
+          matrix = matrix.translate.apply(matrix, transformOrigin);
+          content.style.transform = matrix;
+          content.setAttribute('transform', matrix);
+      }
+      else {
+          content.style.width = content.style.height = scale * 100 + "%";
+      }
       container.setAttribute('data-scale', scale);
       container.scrollLeft = Math.round(previousScrollLeft + previousCenterOffsetX * actualRatio - previousCenterOffsetX);
       container.scrollTop = Math.round(previousScrollTop + previousCenterOffsetY * actualRatio - previousCenterOffsetY);
@@ -126,12 +131,13 @@ var svgPanZoomContainer = (function (exports) {
       addEventListener('wheel', function (event) {
           var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
           if (target) {
-              var wheelScaleRatio = options && +options.wheelScaleRatio || defaultOptions.wheelScaleRatio;
+              var wheelScaleRatio = +options.wheelScaleRatio || defaultOptions.wheelScaleRatio;
               zoom(target, 1 + event.deltaY * wheelScaleRatio, {
                   centerClientX: event.clientX,
                   centerClientY: event.clientY,
-                  minScale: options && +options.minScale || defaultOptions.minScale,
-                  maxScale: options && +options.maxScale || defaultOptions.maxScale,
+                  minScale: +options.minScale || defaultOptions.minScale,
+                  maxScale: +options.maxScale || defaultOptions.maxScale,
+                  scalingProperty: options.scalingProperty || defaultOptions.scalingProperty,
               });
               event.preventDefault();
           }
@@ -146,6 +152,7 @@ var svgPanZoomContainer = (function (exports) {
       minScale: 1,
       maxScale: 10,
       wheelScaleRatio: .002,
+      scalingProperty: 'width/height',
   });
   //# sourceMappingURL=module.js.map
 

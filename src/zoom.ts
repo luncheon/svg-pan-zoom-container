@@ -5,18 +5,16 @@ export interface ZoomOptions {
   centerClientY?: number
   minScale?: number
   maxScale?: number
+  scalingProperty?: 'transform' | 'width/height'
 }
 
 export function getScale(container: Element) {
-  return +(container && container.firstElementChild && new DomMatrix(getComputedStyle(container.firstElementChild).transform!).a || 1)
+  return +(container && container.getAttribute('data-scale') || 1)
 }
 
 export function setScale(container: Element, value: number, options: ZoomOptions = {}) {
   const content = container.firstElementChild as HTMLElement | SVGElement
-  const computedStyle = getComputedStyle(content)
-  const transformOrigin = computedStyle.transformOrigin!.split(' ').map(parseFloat)
-  let matrix = new DomMatrix(computedStyle.transform!)
-  const previousScale = matrix.a
+  const previousScale = getScale(container)
   const scale = clamp(value, options.minScale || 1, options.maxScale || 10)
   if (scale === previousScale) {
     return
@@ -28,15 +26,21 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   const previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left
   const previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top
 
-  matrix = matrix.translate(...transformOrigin.map(minus))
-  matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio
-  matrix.a = scale
-  matrix = matrix.translate(...transformOrigin)
-
-  // for Firefox, Safari
-  content.style.transform = matrix as any as string
-  // for Chrome
-  content.setAttribute('transform', matrix as any as string)
+  if (options.scalingProperty === 'transform') {
+    const computedStyle = getComputedStyle(content)
+    const transformOrigin = computedStyle.transformOrigin!.split(' ').map(parseFloat)
+    let matrix = new DomMatrix(computedStyle.transform!)
+    matrix = matrix.translate(...transformOrigin.map(minus))
+    matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio
+    matrix.a = scale
+    matrix = matrix.translate(...transformOrigin)
+    // for Firefox, Safari
+    content.style.transform = matrix as any as string
+    // for Chrome
+    content.setAttribute('transform', matrix as any as string)
+  } else {
+    content.style.width = content.style.height = `${scale * 100}%`
+  }
 
   container.setAttribute('data-scale', scale as any)
   container.scrollLeft = Math.round(previousScrollLeft + previousCenterOffsetX * actualRatio - previousCenterOffsetX)

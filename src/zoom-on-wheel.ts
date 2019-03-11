@@ -1,9 +1,7 @@
-import { zoom } from './zoom'
+import { zoom, ZoomOptions } from './zoom'
 import { findTargetAndParseOptions } from './utils'
 
-export interface ZoomOnWheelOptions {
-  readonly minScale: number
-  readonly maxScale: number
+export interface ZoomOnWheelOptions extends ZoomOptions {
   readonly wheelScaleRatio: number
 }
 
@@ -15,12 +13,13 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
   addEventListener('wheel', event => {
     const [target, options] = findTargetAndParseOptions(event.target as Element, attributeName)
     if (target) {
-      const wheelScaleRatio = options && +options.wheelScaleRatio || defaultOptions.wheelScaleRatio
+      const wheelScaleRatio = +options!.wheelScaleRatio || defaultOptions.wheelScaleRatio
       zoom(target, 1 + event.deltaY * wheelScaleRatio, {
         centerClientX: event.clientX,
         centerClientY: event.clientY,
-        minScale: options && +options.minScale || defaultOptions.minScale,
-        maxScale: options && +options.maxScale || defaultOptions.maxScale,
+        minScale: +options!.minScale || defaultOptions.minScale,
+        maxScale: +options!.maxScale || defaultOptions.maxScale,
+        scalingProperty: options!.scalingProperty as ZoomOptions['scalingProperty'] || defaultOptions.scalingProperty,
       })
       event.preventDefault()
     }
