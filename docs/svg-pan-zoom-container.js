@@ -1,97 +1,47 @@
 var svgPanZoomContainer = (function (exports) {
   'use strict';
 
-  var DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || window.MSCSSMatrix;
-  function fitViewBox(svg) {
-      var bbox = svg.getBBox();
-      svg.setAttribute('viewBox', bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height);
+  function pan(scrollable, deltaX, deltaY) {
+      scrollable.scrollLeft -= deltaX;
+      scrollable.scrollTop -= deltaY;
   }
-  function reset(svgContainer) {
-      var svg = svgContainer.firstElementChild;
-      if (!(svg instanceof SVGSVGElement)) {
-          throw Error('Element is not a container of a SVG element');
-      }
-      svg.removeAttribute('transform');
-  }
-  function pan(svgContainer, deltaX, deltaY) {
-      svgContainer.scrollLeft -= deltaX;
-      svgContainer.scrollTop -= deltaY;
-  }
-  function getScale(svgContainer) {
-      var svg = svgContainer.firstElementChild;
-      if (!(svg instanceof SVGSVGElement)) {
-          throw Error('Element is not a container of a SVG element');
-      }
-      return new DomMatrix(getComputedStyle(svg).transform).a;
-  }
-  function zoom(svgContainer, ratio, options) {
-      if (options === void 0) { options = {}; }
-      var svg = svgContainer.firstElementChild;
-      if (!(svg instanceof SVGSVGElement)) {
-          throw Error('Element is not a container of a SVG element');
-      }
-      var previousScale = getScale(svgContainer);
-      var scale = clamp(previousScale * ratio, options.minScale || 1, options.maxScale || 10);
-      var actualRatio = scale / previousScale;
-      var previousScrollLeft = svgContainer.scrollLeft + +(svgContainer.getAttribute('data-scroll-left-decimal-part') || 0);
-      var previousScrollTop = svgContainer.scrollTop + +(svgContainer.getAttribute('data-scroll-top-decimal-part') || 0);
-      var previousClientRect = svg.getBoundingClientRect();
-      var previousCenterOffsetX = ((options.centerClientX || 0) - previousClientRect.left);
-      var previousCenterOffsetY = ((options.centerClientY || 0) - previousClientRect.top);
-      var scrollLeft = previousScrollLeft + previousCenterOffsetX * actualRatio - previousCenterOffsetX;
-      var scrollTop = previousScrollTop + previousCenterOffsetY * actualRatio - previousCenterOffsetY;
-      var scrollLeftInt = Math.floor(scrollLeft);
-      var scrollTopInt = Math.floor(scrollTop);
-      svg.setAttribute('transform', "scale(" + scale + ")");
-      svg.style.transformOrigin = '0 0';
-      svgContainer.scrollLeft = scrollLeftInt;
-      svgContainer.scrollTop = scrollTopInt;
-      svgContainer.setAttribute('data-scroll-left-decimal-part', (scrollLeft - scrollLeftInt));
-      svgContainer.setAttribute('data-scroll-top-decimal-part', (scrollTop - scrollTopInt));
-  }
+
   function clamp(value, min, max) {
       return value < min ? min : value > max ? max : value;
   }
-
-  var Buttons = {
-      left: 0,
-      right: 2,
-  };
-  var defaultOptions = {
-      panButton: 'left',
-      wheelScaleRatio: .002
-  };
-  function parseOptions(optionsString) {
-      if (!optionsString) {
-          return defaultOptions;
-      }
-      var options = {};
-      for (var _i = 0, _a = optionsString.split(';'); _i < _a.length; _i++) {
-          var s = _a[_i];
-          var index = s.indexOf(':');
-          options[s.slice(0, index).trim().replace(/[a-zA-Z0-9_]-[a-z]/g, function ($0) { return $0[0] + $0[2].toUpperCase(); })] = s.slice(index + 1).trim();
-      }
-      return {
-          panButton: options.panButton === 'right' ? 'right' : 'left',
-          wheelScaleRatio: +options.wheelScaleRatio || defaultOptions.wheelScaleRatio,
+  var closest = Element.prototype.closest
+      ? function (element, selector) { return element && element.closest(selector); }
+      : function (element, selector) {
+          while (element && !element.matches(selector)) {
+              element = element.parentElement;
+          }
+          return element;
       };
+  function parseOptions(optionsString) {
+      var options = {};
+      if (optionsString) {
+          for (var _i = 0, _a = optionsString.split(';'); _i < _a.length; _i++) {
+              var s = _a[_i];
+              var index = s.indexOf(':');
+              options[s.slice(0, index).trim().replace(/[a-zA-Z0-9_]-[a-z]/g, function ($0) { return $0[0] + $0[2].toUpperCase(); })] = s.slice(index + 1).trim();
+          }
+      }
+      return options;
   }
-  function listen(svgContainerAttributeName) {
-      (document.head || document.body || document.documentElement)
-          .appendChild(document.createElement('style'))
-          .textContent = "[" + svgContainerAttributeName + "]{overflow:scroll}[" + svgContainerAttributeName + "]";
+  function findTargetAndParseOptions(element, attributeName) {
+      var target = closest(element, "[" + attributeName + "]");
+      return target ? [target, parseOptions(target.getAttribute(attributeName))] : [];
+  }
+
+  function panOnDrag(attributeName, defaultOptions) {
       var panningContainer;
       addEventListener('pointerdown', function (event) {
           if (event.button !== 0 && event.button !== 2) {
               return;
           }
-          var svgContainer = findTargetElement(event.target);
-          if (!svgContainer) {
-              return;
-          }
-          var options = parseOptions(svgContainer.getAttribute(svgContainerAttributeName));
-          if (event.button === Buttons[options.panButton]) {
-              panningContainer = svgContainer;
+          var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
+          if (options && isPanButtonPressed(event, options, defaultOptions)) {
+              panningContainer = target;
           }
       });
       addEventListener('pointermove', function (event) {
@@ -99,40 +49,81 @@ var svgPanZoomContainer = (function (exports) {
               pan(panningContainer, event.movementX, event.movementY);
           }
       });
-      addEventListener('pointerup', function (event) {
+      addEventListener('pointerup', function () {
           panningContainer = undefined;
       });
-      addEventListener('wheel', function (event) {
-          var svgContainer = findTargetElement(event.target);
-          if (svgContainer) {
-              var options = parseOptions(svgContainer.getAttribute(svgContainerAttributeName));
-              zoom(svgContainer, 1 + event.deltaY * options.wheelScaleRatio, { centerClientX: event.clientX, centerClientY: event.clientY });
+      addEventListener('contextmenu', function (event) {
+          var _a = findTargetAndParseOptions(event.target, attributeName), options = _a[1];
+          if (options && isPanButtonPressed(event, options, defaultOptions)) {
               event.preventDefault();
           }
       });
-      addEventListener('contextmenu', function (event) {
-          var svgContainer = findTargetElement(event.target);
-          if (svgContainer) {
-              var options = parseOptions(svgContainer.getAttribute(svgContainerAttributeName));
-              if (options.panButton === 'right') {
-                  event.preventDefault();
-              }
-          }
-      });
-      function findTargetElement(element) {
-          while (element && !element.hasAttribute(svgContainerAttributeName)) {
-              element = element.parentElement;
-          }
-          return element;
-      }
+  }
+  function isPanButtonPressed(event, options, defaultOptions) {
+      return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0);
   }
 
-  listen('data-svg-pan-zoom-container');
+  function getScale(container) {
+      return +(container && container.getAttribute('data-scale') || 1);
+  }
+  function setScale(container, value, options) {
+      if (options === void 0) { options = {}; }
+      var content = container.firstElementChild;
+      var previousScale = getScale(container);
+      var scale = clamp(value, options.minScale || 1, options.maxScale || 10);
+      if (scale === previousScale) {
+          return;
+      }
+      var actualRatio = scale / previousScale;
+      var previousScrollLeft = container.scrollLeft;
+      var previousScrollTop = container.scrollTop;
+      var previousClientRect = content.getBoundingClientRect();
+      var previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left;
+      var previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top;
+      content.style.width = content.style.height = scale * 100 + "%";
+      container.setAttribute('data-scale', scale);
+      container.scrollLeft = Math.round(previousScrollLeft + previousCenterOffsetX * actualRatio - previousCenterOffsetX);
+      container.scrollTop = Math.round(previousScrollTop + previousCenterOffsetY * actualRatio - previousCenterOffsetY);
+  }
+  function resetScale(container, options) {
+      setScale(container, 1, options);
+  }
+  function zoom(container, ratio, options) {
+      setScale(container, getScale(container) * ratio, options);
+  }
 
-  exports.fitViewBox = fitViewBox;
-  exports.reset = reset;
+  function zoomOnWheel(attributeName, defaultOptions) {
+      (document.head || document.body || document.documentElement)
+          .appendChild(document.createElement('style'))
+          .textContent = "[" + attributeName + "]{overflow:scroll}[" + attributeName + "]>:first-child{width:100%;height:100%;vertical-align:middle;}";
+      addEventListener('wheel', function (event) {
+          var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
+          if (target) {
+              var wheelScaleRatio = options && +options.wheelScaleRatio || defaultOptions.wheelScaleRatio;
+              zoom(target, 1 + event.deltaY * wheelScaleRatio, {
+                  centerClientX: event.clientX,
+                  centerClientY: event.clientY,
+                  minScale: options && +options.minScale || defaultOptions.minScale,
+                  maxScale: options && +options.maxScale || defaultOptions.maxScale,
+              });
+              event.preventDefault();
+          }
+      });
+  }
+
+  panOnDrag('data-pan-on-drag', {
+      button: 'left',
+  });
+  zoomOnWheel('data-zoom-on-wheel', {
+      minScale: 1,
+      maxScale: 10,
+      wheelScaleRatio: .002,
+  });
+
   exports.pan = pan;
   exports.getScale = getScale;
+  exports.setScale = setScale;
+  exports.resetScale = resetScale;
   exports.zoom = zoom;
 
   return exports;

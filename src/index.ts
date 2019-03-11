@@ -1,4 +1,21 @@
-import { listen } from './listen'
-export * from './core'
+import { panOnDrag } from './pan-on-drag'
+import { zoomOnWheel } from './zoom-on-wheel'
 
-listen('data-svg-pan-zoom-container')
+export * from './pan'
+export * from './zoom'
+
+panOnDrag(
+  'data-pan-on-drag',
+  {
+    button: 'left',
+  },
+)
+
+zoomOnWheel(
+  'data-zoom-on-wheel',
+  {
+    minScale: 1,
+    maxScale: 10,
+    wheelScaleRatio: .002,
+  },
+)

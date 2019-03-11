@@ -4,6 +4,7 @@ html
     meta(charset="utf-8")
     meta(http-equiv="X-UA-Compatible" content="IE=edge")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= name
     style.
       html, body, svg { height: 100%; }
       body { margin: 8px 16px; }
@@ -11,23 +12,26 @@ html
       h1 { margin: 0; }
   body
     header
-      h1 svg-pan-zoom-container
-      a(href="https://github.com/luncheon/svg-pan-zoom-container")
+      h1= name
+      a(href=`https://github.com/luncheon/${name}`)
         img(src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5em; margin-left: 1em; vertical-align: bottom;")
-    p SVG でパン（ドラッグ）とズーム（ホイール）するやつ
+    p
+    | svg の親要素に data-pan-on-drag 属性をつけるとドラッグでパンします。
+    br
+    | svg の親要素に data-zoom-on-wheel 属性をつけるとホイールでズームします。
 
-    div(data-svg-pan-zoom-container style="border: 1px solid grey; width: 400px; height: 400px;")
+    div#container(data-pan-on-drag data-zoom-on-wheel style="border: 1px solid grey; width: 400px; height: 400px;")
       include ./sample.svg
     div#zoom-controller
-      input#scale(type="number" value="100")
-      button#reset(type="button" onclick="svgPanZoomContainer.reset(document.querySelector('[data-svg-pan-zoom-container]'))") リセット
-    script(src="svg-pan-zoom-container.js")
+      input#scale(type="number" value="100" oninput="svgPanZoomContainer.setScale(document.getElementById('container'), +this.value / 100)")
+      button#reset(type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))") リセット
+    script(src=`${name}.js`)
     script.
       (function () {
-        const container = document.querySelector('[data-svg-pan-zoom-container]')
+        const container = document.getElementById('container')
         new MutationObserver(function (mutations) {
           mutations.forEach(function (mutation) {
-            document.getElementById('scale').value = svgPanZoomContainer.getScale(mutation.target.parentElement) * 100
+            document.getElementById('scale').value = svgPanZoomContainer.getScale(mutation.target) * 100
           })
-        }).observe(container.firstElementChild, { attributes: true, attributeFilter: ['transform'] })
+        }).observe(container, { attributes: true, attributeFilter: ['data-scale'] })
       })()
