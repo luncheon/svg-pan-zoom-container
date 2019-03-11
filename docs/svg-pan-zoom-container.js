@@ -131,8 +131,8 @@ var svgPanZoomContainer = (function (exports) {
       addEventListener('wheel', function (event) {
           var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
           if (target) {
-              var wheelScaleRatio = +options.wheelScaleRatio || defaultOptions.wheelScaleRatio;
-              zoom(target, 1 - event.deltaY * wheelScaleRatio, {
+              var zoomAmount = +options.zoomAmount || defaultOptions.zoomAmount;
+              zoom(target, 1 - event.deltaY * zoomAmount, {
                   centerClientX: event.clientX,
                   centerClientY: event.clientY,
                   minScale: +options.minScale || defaultOptions.minScale,
@@ -151,7 +151,7 @@ var svgPanZoomContainer = (function (exports) {
   zoomOnWheel('data-zoom-on-wheel', {
       minScale: 1,
       maxScale: 10,
-      wheelScaleRatio: .002,
+      zoomAmount: .002,
       scalingProperty: 'width/height',
   });
   //# sourceMappingURL=module.js.map
