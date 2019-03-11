@@ -1,4 +1,4 @@
-import { clamp } from './utils'
+import { clamp, DomMatrix } from './utils'
 
 export interface ZoomOptions {
   centerClientX?: number
@@ -8,12 +8,15 @@ export interface ZoomOptions {
 }
 
 export function getScale(container: Element) {
-  return +(container && container.getAttribute('data-scale') || 1)
+  return +(container && container.firstElementChild && new DomMatrix(getComputedStyle(container.firstElementChild).transform!).a || 1)
 }
 
 export function setScale(container: Element, value: number, options: ZoomOptions = {}) {
   const content = container.firstElementChild as HTMLElement | SVGElement
-  const previousScale = getScale(container)
+  const computedStyle = getComputedStyle(content)
+  const transformOrigin = computedStyle.transformOrigin!.split(' ').map(parseFloat)
+  const matrix = new DomMatrix(computedStyle.transform!)
+  const previousScale = matrix.a
   const scale = clamp(value, options.minScale || 1, options.maxScale || 10)
   if (scale === previousScale) {
     return
@@ -25,9 +28,17 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   const previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left
   const previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top
 
-  content.style.width = content.style.height = `${scale * 100}%`
-  container.setAttribute('data-scale', scale as any)
+  matrix.translateSelf(...transformOrigin.map(minus))
+  matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio
+  matrix.a = scale
+  matrix.translateSelf(...transformOrigin)
 
+  // for Firefox, Safari
+  content.style.transform = matrix as any as string
+  // for Chrome
+  content.setAttribute('transform', matrix as any as string)
+
+  container.setAttribute('data-scale', scale as any)
   container.scrollLeft = Math.round(previousScrollLeft + previousCenterOffsetX * actualRatio - previousCenterOffsetX)
   container.scrollTop = Math.round(previousScrollTop + previousCenterOffsetY * actualRatio - previousCenterOffsetY)
 }
@@ -38,4 +49,8 @@ export function resetScale(container: Element, options?: ZoomOptions) {
 
 export function zoom(container: Element, ratio: number, options?: ZoomOptions) {
   setScale(container, getScale(container) * ratio, options)
+}
+
+function minus(n: number) {
+  return -n
 }

@@ -1,3 +1,5 @@
+export const DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || window.MSCSSMatrix
+
 export function clamp(value: number, min: number, max: number): number {
   return value < min ? min : value > max ? max : value
 }
@@ -5,7 +7,7 @@ export function clamp(value: number, min: number, max: number): number {
 const matches =
   Element.prototype.matches ||
   Element.prototype.webkitMatchesSelector ||
-  (Element.prototype as any).msMatchesSelector
+  Element.prototype.msMatchesSelector
 
 const closest: (element: Element | null, selector: string) => Element | null =
   Element.prototype.closest
