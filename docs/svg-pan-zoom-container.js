@@ -49,6 +49,7 @@ var svgPanZoomContainer = (function (exports) {
               panningContainer = target;
               clientX = event.clientX;
               clientY = event.clientY;
+              event.preventDefault();
           }
       });
       addEventListener('pointermove', function (event) {

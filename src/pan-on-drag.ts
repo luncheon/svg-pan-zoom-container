@@ -19,6 +19,7 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
       panningContainer = target as HTMLElement
       clientX = event.clientX
       clientY = event.clientY
+      event.preventDefault()
     }
   })
 
