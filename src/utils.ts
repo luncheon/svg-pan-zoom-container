@@ -12,7 +12,7 @@ const closest: (element: Element | null, selector: string) => Element | null =
   ? (element, selector) => element && element.closest(selector)
   : (element, selector) => {
     while (element && !matches.call(element, selector)) {
-      element = element.parentElement
+      element = element.parentNode instanceof Element ? element.parentNode : null
     }
     return element
   }
