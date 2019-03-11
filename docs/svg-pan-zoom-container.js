@@ -38,6 +38,8 @@ var svgPanZoomContainer = (function (exports) {
 
   function panOnDrag(attributeName, defaultOptions) {
       var panningContainer;
+      var clientX;
+      var clientY;
       addEventListener('pointerdown', function (event) {
           if (event.button !== 0 && event.button !== 2) {
               return;
@@ -45,16 +47,20 @@ var svgPanZoomContainer = (function (exports) {
           var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
           if (options && isPanButtonPressed(event, options, defaultOptions)) {
               panningContainer = target;
+              clientX = event.clientX;
+              clientY = event.clientY;
           }
       });
       addEventListener('pointermove', function (event) {
-          if (panningContainer) {
-              pan(panningContainer, event.movementX, event.movementY);
+          if (panningContainer && typeof clientX === 'number' && typeof clientY === 'number') {
+              pan(panningContainer, event.clientX - clientX, event.clientY - clientY);
+              clientX = event.clientX;
+              clientY = event.clientY;
               event.preventDefault();
           }
       });
       addEventListener('pointerup', function () {
-          panningContainer = undefined;
+          panningContainer = clientX = clientY = undefined;
       });
       addEventListener('contextmenu', function (event) {
           var _a = findTargetAndParseOptions(event.target, attributeName), options = _a[1];

@@ -7,6 +7,8 @@ export interface PanOnDragOptions {
 
 export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOptions) {
   let panningContainer: HTMLElement | undefined
+  let clientX: number | undefined
+  let clientY: number | undefined
 
   addEventListener('pointerdown', event => {
     if (event.button !== 0 && event.button !== 2) {
@@ -15,18 +17,22 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
     const [target, options] = findTargetAndParseOptions(event.target as Element, attributeName)
     if (options && isPanButtonPressed(event, options, defaultOptions)) {
       panningContainer = target as HTMLElement
+      clientX = event.clientX
+      clientY = event.clientY
     }
   })
 
   addEventListener('pointermove', event => {
-    if (panningContainer) {
-      pan(panningContainer, event.movementX, event.movementY)
+    if (panningContainer && typeof clientX === 'number' && typeof clientY === 'number') {
+      pan(panningContainer, event.clientX - clientX, event.clientY - clientY)
+      clientX = event.clientX
+      clientY = event.clientY
       event.preventDefault()
     }
   })
 
   addEventListener('pointerup', () => {
-    panningContainer = undefined
+    panningContainer = clientX = clientY = undefined
   })
 
   addEventListener('contextmenu', event => {
