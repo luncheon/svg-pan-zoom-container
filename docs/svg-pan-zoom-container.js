@@ -98,10 +98,10 @@ var svgPanZoomContainer = (function (exports) {
       var previousClientRect = content.getBoundingClientRect();
       var previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left;
       var previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top;
-      matrix.translateSelf.apply(matrix, transformOrigin.map(minus));
+      matrix = matrix.translate.apply(matrix, transformOrigin.map(minus));
       matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio;
       matrix.a = scale;
-      matrix.translateSelf.apply(matrix, transformOrigin);
+      matrix = matrix.translate.apply(matrix, transformOrigin);
       content.style.transform = matrix;
       content.setAttribute('transform', matrix);
       container.setAttribute('data-scale', scale);

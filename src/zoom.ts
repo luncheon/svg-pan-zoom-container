@@ -15,7 +15,7 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   const content = container.firstElementChild as HTMLElement | SVGElement
   const computedStyle = getComputedStyle(content)
   const transformOrigin = computedStyle.transformOrigin!.split(' ').map(parseFloat)
-  const matrix = new DomMatrix(computedStyle.transform!)
+  let matrix = new DomMatrix(computedStyle.transform!)
   const previousScale = matrix.a
   const scale = clamp(value, options.minScale || 1, options.maxScale || 10)
   if (scale === previousScale) {
@@ -28,10 +28,10 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   const previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left
   const previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top
 
-  matrix.translateSelf(...transformOrigin.map(minus))
+  matrix = matrix.translate(...transformOrigin.map(minus))
   matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio
   matrix.a = scale
-  matrix.translateSelf(...transformOrigin)
+  matrix = matrix.translate(...transformOrigin)
 
   // for Firefox, Safari
   content.style.transform = matrix as any as string
