@@ -2,11 +2,16 @@ export function clamp(value: number, min: number, max: number): number {
   return value < min ? min : value > max ? max : value
 }
 
+const matches =
+  Element.prototype.matches ||
+  Element.prototype.webkitMatchesSelector ||
+  (Element.prototype as any).msMatchesSelector
+
 const closest: (element: Element | null, selector: string) => Element | null =
   Element.prototype.closest
   ? (element, selector) => element && element.closest(selector)
   : (element, selector) => {
-    while (element && !element.matches(selector)) {
+    while (element && !matches.call(element, selector)) {
       element = element.parentElement
     }
     return element

@@ -9,10 +9,13 @@ var svgPanZoomContainer = (function (exports) {
   function clamp(value, min, max) {
       return value < min ? min : value > max ? max : value;
   }
+  var matches = Element.prototype.matches ||
+      Element.prototype.webkitMatchesSelector ||
+      Element.prototype.msMatchesSelector;
   var closest = Element.prototype.closest
       ? function (element, selector) { return element && element.closest(selector); }
       : function (element, selector) {
-          while (element && !element.matches(selector)) {
+          while (element && !matches.call(element, selector)) {
               element = element.parentElement;
           }
           return element;
