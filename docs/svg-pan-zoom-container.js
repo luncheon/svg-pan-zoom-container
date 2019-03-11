@@ -5,7 +5,9 @@ var svgPanZoomContainer = (function (exports) {
       scrollable.scrollLeft -= deltaX;
       scrollable.scrollTop -= deltaY;
   }
+  //# sourceMappingURL=module.js.map
 
+  var DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || window.MSCSSMatrix;
   function clamp(value, min, max) {
       return value < min ? min : value > max ? max : value;
   }
@@ -35,12 +37,13 @@ var svgPanZoomContainer = (function (exports) {
       var target = closest(element, "[" + attributeName + "]");
       return target ? [target, parseOptions(target.getAttribute(attributeName))] : [];
   }
+  //# sourceMappingURL=module.js.map
 
   function panOnDrag(attributeName, defaultOptions) {
       var panningContainer;
       var clientX;
       var clientY;
-      addEventListener('pointerdown', function (event) {
+      addEventListener('mousedown', function (event) {
           if (event.button !== 0 && event.button !== 2) {
               return;
           }
@@ -52,7 +55,7 @@ var svgPanZoomContainer = (function (exports) {
               event.preventDefault();
           }
       });
-      addEventListener('pointermove', function (event) {
+      addEventListener('mousemove', function (event) {
           if (panningContainer && typeof clientX === 'number' && typeof clientY === 'number') {
               pan(panningContainer, event.clientX - clientX, event.clientY - clientY);
               clientX = event.clientX;
@@ -60,7 +63,7 @@ var svgPanZoomContainer = (function (exports) {
               event.preventDefault();
           }
       });
-      addEventListener('pointerup', function () {
+      addEventListener('mouseup', function () {
           panningContainer = clientX = clientY = undefined;
       });
       addEventListener('contextmenu', function (event) {
@@ -73,14 +76,18 @@ var svgPanZoomContainer = (function (exports) {
   function isPanButtonPressed(event, options, defaultOptions) {
       return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0);
   }
+  //# sourceMappingURL=module.js.map
 
   function getScale(container) {
-      return +(container && container.getAttribute('data-scale') || 1);
+      return +(container && container.firstElementChild && new DomMatrix(getComputedStyle(container.firstElementChild).transform).a || 1);
   }
   function setScale(container, value, options) {
       if (options === void 0) { options = {}; }
       var content = container.firstElementChild;
-      var previousScale = getScale(container);
+      var computedStyle = getComputedStyle(content);
+      var transformOrigin = computedStyle.transformOrigin.split(' ').map(parseFloat);
+      var matrix = new DomMatrix(computedStyle.transform);
+      var previousScale = matrix.a;
       var scale = clamp(value, options.minScale || 1, options.maxScale || 10);
       if (scale === previousScale) {
           return;
@@ -91,7 +98,12 @@ var svgPanZoomContainer = (function (exports) {
       var previousClientRect = content.getBoundingClientRect();
       var previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left;
       var previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top;
-      content.style.width = content.style.height = scale * 100 + "%";
+      matrix.translateSelf.apply(matrix, transformOrigin.map(minus));
+      matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio;
+      matrix.a = scale;
+      matrix.translateSelf.apply(matrix, transformOrigin);
+      content.style.transform = matrix;
+      content.setAttribute('transform', matrix);
       container.setAttribute('data-scale', scale);
       container.scrollLeft = Math.round(previousScrollLeft + previousCenterOffsetX * actualRatio - previousCenterOffsetX);
       container.scrollTop = Math.round(previousScrollTop + previousCenterOffsetY * actualRatio - previousCenterOffsetY);
@@ -102,6 +114,10 @@ var svgPanZoomContainer = (function (exports) {
   function zoom(container, ratio, options) {
       setScale(container, getScale(container) * ratio, options);
   }
+  function minus(n) {
+      return -n;
+  }
+  //# sourceMappingURL=module.js.map
 
   function zoomOnWheel(attributeName, defaultOptions) {
       (document.head || document.body || document.documentElement)
@@ -121,6 +137,7 @@ var svgPanZoomContainer = (function (exports) {
           }
       });
   }
+  //# sourceMappingURL=module.js.map
 
   panOnDrag('data-pan-on-drag', {
       button: 'left',
@@ -130,6 +147,7 @@ var svgPanZoomContainer = (function (exports) {
       maxScale: 10,
       wheelScaleRatio: .002,
   });
+  //# sourceMappingURL=module.js.map
 
   exports.pan = pan;
   exports.getScale = getScale;

@@ -10,7 +10,7 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
   let clientX: number | undefined
   let clientY: number | undefined
 
-  addEventListener('pointerdown', event => {
+  addEventListener('mousedown', event => {
     if (event.button !== 0 && event.button !== 2) {
       return
     }
@@ -23,7 +23,7 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
     }
   })
 
-  addEventListener('pointermove', event => {
+  addEventListener('mousemove', event => {
     if (panningContainer && typeof clientX === 'number' && typeof clientY === 'number') {
       pan(panningContainer, event.clientX - clientX, event.clientY - clientY)
       clientX = event.clientX
@@ -32,7 +32,7 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
     }
   })
 
-  addEventListener('pointerup', () => {
+  addEventListener('mouseup', () => {
     panningContainer = clientX = clientY = undefined
   })
 
