@@ -5,6 +5,7 @@ var svgPanZoomContainer = (function (exports) {
       scrollable.scrollLeft -= deltaX;
       scrollable.scrollTop -= deltaY;
   }
+  //# sourceMappingURL=module.js.map
 
   function clamp(value, min, max) {
       return value < min ? min : value > max ? max : value;
@@ -35,6 +36,7 @@ var svgPanZoomContainer = (function (exports) {
       var target = closest(element, "[" + attributeName + "]");
       return target ? [target, parseOptions(target.getAttribute(attributeName))] : [];
   }
+  //# sourceMappingURL=module.js.map
 
   function panOnDrag(attributeName, defaultOptions) {
       var panningContainer;
@@ -50,6 +52,7 @@ var svgPanZoomContainer = (function (exports) {
       addEventListener('pointermove', function (event) {
           if (panningContainer) {
               pan(panningContainer, event.movementX, event.movementY);
+              event.preventDefault();
           }
       });
       addEventListener('pointerup', function () {
@@ -65,6 +68,7 @@ var svgPanZoomContainer = (function (exports) {
   function isPanButtonPressed(event, options, defaultOptions) {
       return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0);
   }
+  //# sourceMappingURL=module.js.map
 
   function getScale(container) {
       return +(container && container.getAttribute('data-scale') || 1);
@@ -94,6 +98,7 @@ var svgPanZoomContainer = (function (exports) {
   function zoom(container, ratio, options) {
       setScale(container, getScale(container) * ratio, options);
   }
+  //# sourceMappingURL=module.js.map
 
   function zoomOnWheel(attributeName, defaultOptions) {
       (document.head || document.body || document.documentElement)
@@ -113,6 +118,7 @@ var svgPanZoomContainer = (function (exports) {
           }
       });
   }
+  //# sourceMappingURL=module.js.map
 
   panOnDrag('data-pan-on-drag', {
       button: 'left',
@@ -122,6 +128,7 @@ var svgPanZoomContainer = (function (exports) {
       maxScale: 10,
       wheelScaleRatio: .002,
   });
+  //# sourceMappingURL=module.js.map
 
   exports.pan = pan;
   exports.getScale = getScale;

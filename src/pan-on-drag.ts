@@ -21,6 +21,7 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
   addEventListener('pointermove', event => {
     if (panningContainer) {
       pan(panningContainer, event.movementX, event.movementY)
+      event.preventDefault()
     }
   })
 
