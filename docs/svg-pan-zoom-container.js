@@ -132,7 +132,7 @@ var svgPanZoomContainer = (function (exports) {
           var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
           if (target) {
               var wheelScaleRatio = +options.wheelScaleRatio || defaultOptions.wheelScaleRatio;
-              zoom(target, 1 + event.deltaY * wheelScaleRatio, {
+              zoom(target, 1 - event.deltaY * wheelScaleRatio, {
                   centerClientX: event.clientX,
                   centerClientY: event.clientY,
                   minScale: +options.minScale || defaultOptions.minScale,
