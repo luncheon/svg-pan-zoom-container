@@ -1,7 +1,19 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>svg-pan-zoom-container</title><style>html, body, svg { height: 100%; }
-body { margin: 8px 16px; }
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>svg-pan-zoom-container</title><script async src="https://www.googletagmanager.com/gtag/js?id=UA-64398169-1"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','UA-64398169-1');</script><link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Comfortaa|Roboto:300"><link rel="preload" as="script" href="https://www.google-analytics.com/analytics.js"><style>html, body, svg { height: 100%; }
+body { margin: 8px 16px; font-family: Roboto,sans-serif; font-weight: 300; }
 header { display: flex; align-items: center; margin: .5em 0; }
-h1 { margin: 0; }</style></head><body><header><h1>svg-pan-zoom-container</h1><a href="https://github.com/luncheon/svg-pan-zoom-container"><img src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5em; margin-left: 1em; vertical-align: bottom;"></a></header><p>A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.</p><div id="container" data-pan-on-drag data-zoom-on-wheel style="border: 1px solid grey; width: 400px; height: 400px;"><svg version="1.1" id="_x31_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve">
+h1 { margin: 0; font-family: Comfortaa; font-weight: 400; font-size: 2.5rem; }
+input,button {
+  padding: .25em .5em;
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  font-size: inherit;
+}
+button { cursor: pointer; transition: all .2s ease-out; }
+button:hover { box-shadow: 0 0 8px #aaa; }
+input,button,.monospaced { font-family: Roboto,monospace; }
+input[type=number] { text-align: right; }
+.ml4 { margin-left: 4px; }</style></head><body><header><h1>svg-pan-zoom-container</h1><a href="https://github.com/luncheon/svg-pan-zoom-container"><img src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5rem; margin-left: 1em; vertical-align: bottom;"></a></header><p>A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.</p><div id="container" data-pan-on-drag data-zoom-on-wheel style="padding: 10px; border: 1px solid #ccc; box-shadow: 0 0 8px #aaa; width: 400px; height: 400px;"><svg version="1.1" id="_x31_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#374149;}
 </style>
@@ -61,11 +73,11 @@ h1 { margin: 0; }</style></head><body><header><h1>svg-pan-zoom-container</h1><a 
 		C366.46,160.803,375.108,169.006,382.816,178.155z" style="fill: rgb(75, 75, 75);"></path>
 </g>
 </svg>
-</div><div id="zoom-controller"><input id="scale" type="number" value="100" oninput="svgPanZoomContainer.setScale(document.getElementById('container'), +this.value / 100)"><button id="reset" type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))">リセット</button></div><script src="index.min.js"></script><script>(function () {
+</div><div id="zoom-controller" style="font-size: .8125rem; margin: 8px 0;"><div style="position: relative; display: inline-block;"><input id="scale" type="number" value="100.00" min="100.00" max="1000.00" step="1.00" style="padding-right: 1em;" oninput="svgPanZoomContainer.setScale(document.getElementById('container'), +this.value / 100)"><span class="monospaced" style="position: absolute; right: .5em; bottom: .25em;">%</span></div><button class="ml4" id="reset" type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))">Reset</button></div><script src="index.min.js"></script><script>(function () {
   const container = document.getElementById('container')
   new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-      document.getElementById('scale').value = svgPanZoomContainer.getScale(mutation.target) * 100
+      document.getElementById('scale').value = (Math.round(svgPanZoomContainer.getScale(mutation.target) * 10000) / 100).toFixed(2)
     })
   }).observe(container, { attributes: true, attributeFilter: ['data-scale'] })
 })()</script></body></html>
