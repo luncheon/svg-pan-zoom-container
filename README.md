@@ -93,20 +93,7 @@ Multiple options should be separated by semicolon.
 
 ## Observation
 
-### Scroll observation
-
-This module uses `overflow: scroll` style for scrolling.  
-Therefore, `scroll` event is fired on pan.
-
-```javascript
-document
-  .getElementById('my-svg-container')
-  .addEventListener('scroll', function () {
-    console.log({ scrollLeft: this.scrollLeft, scrollTop: this.scrollTop });
-  });
-```
-
-### Scale observation
+### Zoom (scale) observation
 
 This module does not fire any events but set `data-scale` attribute on the container element.  
 Therefore, `MutationObserver` can be used to observe the scale as follows:
@@ -126,6 +113,85 @@ observer.observe(
   },
 );
 ```
+
+### Pan (scroll) observation
+
+`scroll` event is fired by panning since this module uses `overflow: scroll` style for scrolling.
+
+```javascript
+document
+  .getElementById('my-svg-container')
+  .addEventListener('scroll', function () {
+    console.log({ scrollLeft: this.scrollLeft, scrollTop: this.scrollTop });
+  });
+```
+
+
+## API
+
+This module provides some functions for scripting to control pan and zoom behavior.  
+
+### API usage
+
+#### When installing via npm
+
+```javascript
+import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-container';
+```
+
+#### When installing via CDN
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.1.1"></script>
+<script>
+  const { pan, zoom, getScale, setScale, resetScale } = svgPanZoomContainer;
+</script>
+```
+
+### pan(container, deltaX, deltaY)
+
+Pans.  
+Currently implemented as follows.
+
+```javascript
+// IE11 does not support `Element.prototype.scrollBy`.
+container.scrollLeft += deltaX
+container.scrollTop += deltaY
+```
+
+### getScale(container)
+
+Returns current scale.  
+The return value is a 1-based fraction, not a percentage.
+
+### setScale(container, value[, options])
+
+Sets scale.  
+The `value` is considered as 1-based fraction, not as percentage.
+
+The `options` can be specified as part of the following object (following values are the default):
+
+```javascript
+const options = {
+  origin: {
+    clientX: 0,
+    clientY: 0,
+  },
+  minScale: 1,
+  maxScale: 10,
+  scalingProperty: 'width/height',  // or 'transform'
+};
+```
+
+See [options for data-zoom-on-wheel](#user-content-options-for-data-zoom-on-wheel) for details of `scalingProperty`.
+
+### resetScale(container[, options])
+
+Equivalents to `setScale(container, 1, options)`.
+
+### zoom(container, ratio[, options])
+
+Equivalents to `setScale(container, getScale(container) * ratio, options)`.
 
 
 ## License
