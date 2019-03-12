@@ -15,17 +15,14 @@ html
       h1= name
       a(href=`https://github.com/luncheon/${name}`)
         img(src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5em; margin-left: 1em; vertical-align: bottom;")
-    p
-    | svg の親要素に data-pan-on-drag 属性をつけるとドラッグでパンします。
-    br
-    | svg の親要素に data-zoom-on-wheel 属性をつけるとホイールでズームします。
+    p A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.
 
     div#container(data-pan-on-drag data-zoom-on-wheel style="border: 1px solid grey; width: 400px; height: 400px;")
       include ./sample.svg
     div#zoom-controller
       input#scale(type="number" value="100" oninput="svgPanZoomContainer.setScale(document.getElementById('container'), +this.value / 100)")
       button#reset(type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))") リセット
-    script(src=`${name}.js`)
+    script(src="index.min.js")
     script.
       (function () {
         const container = document.getElementById('container')

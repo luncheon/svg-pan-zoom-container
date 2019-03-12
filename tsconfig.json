@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
@@ -11,10 +11,10 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "newLine": "LF",
-    "outDir": "."
+    "outDir": "es/"
   },
   "include": [
-    "src/**/*"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules"
