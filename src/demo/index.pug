@@ -32,7 +32,7 @@ html
       h1= name
       a(href=`https://github.com/luncheon/${name}`)
         img(src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5rem; margin-left: 1em; vertical-align: bottom;")
-    p A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.
+    p= description
 
     div#container(data-pan-on-drag data-zoom-on-wheel style="padding: 10px; border: 1px solid #ccc; box-shadow: 0 0 8px #aaa; width: 400px; height: 400px;")
       include ./sample.svg
@@ -43,11 +43,32 @@ html
       button#reset.ml4(type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))") Reset
     script(src="index.min.js")
     script.
-      (function () {
-        const container = document.getElementById('container')
-        new MutationObserver(function (mutations) {
-          mutations.forEach(function (mutation) {
-            document.getElementById('scale').value = (Math.round(svgPanZoomContainer.getScale(mutation.target) * 10000) / 100).toFixed(2)
-          })
-        }).observe(container, { attributes: true, attributeFilter: ['data-scale'] })
-      })()
+      new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          document.getElementById('scale').value = (Math.round(svgPanZoomContainer.getScale(mutation.target) * 10000) / 100).toFixed(2)
+        })
+      }).observe(document.getElementById('container'), { attributes: true, attributeFilter: ['data-scale'] })
+
+    // scroll observation
+    script.
+      document
+        .getElementById('container')
+        .addEventListener('scroll', function () {
+          console.log({ scrollLeft: this.scrollLeft, scrollTop: this.scrollTop });
+        });
+
+    // scale observation
+    script.
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          console.log('scale:', mutation.target.dataset.scale)
+        });
+      });
+
+      observer.observe(
+        document.getElementById('container'),
+        {
+          attributes: true,
+          attributeFilter: ['data-scale'],
+        },
+      );

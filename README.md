@@ -91,6 +91,43 @@ Multiple options should be separated by semicolon.
 | button | "left" \| "right" | "left"  | Mouse button to drag to pan. |
 
 
+## Observation
+
+### Scroll observation
+
+This module uses `overflow: scroll` style for scrolling.  
+Therefore, `scroll` event is fired on pan.
+
+```javascript
+document
+  .getElementById('my-svg-container')
+  .addEventListener('scroll', function () {
+    console.log({ scrollLeft: this.scrollLeft, scrollTop: this.scrollTop });
+  });
+```
+
+### Scale observation
+
+This module does not fire any events but set `data-scale` attribute on the container element.  
+Therefore, `MutationObserver` can be used to observe the scale as follows:
+
+```javascript
+const observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    console.log('scale:', mutation.target.dataset.scale);
+  });
+});
+
+observer.observe(
+  document.getElementById('my-svg-container'),
+  {
+    attributes: true,
+    attributeFilter: ['data-scale'],
+  },
+);
+```
+
+
 ## License
 
 [WTFPL](http://www.wtfpl.net)
