@@ -1,11 +1,10 @@
 import { clamp, DomMatrix } from './utils'
 
 export interface ZoomOptions {
-  centerClientX?: number
-  centerClientY?: number
-  minScale?: number
-  maxScale?: number
-  scalingProperty?: 'transform' | 'width/height'
+  readonly origin?: { clientX: number, clientY: number }
+  readonly minScale?: number
+  readonly maxScale?: number
+  readonly scalingProperty?: 'transform' | 'width/height'
 }
 
 export function getScale(container: Element) {
@@ -23,8 +22,8 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   const previousScrollLeft = container.scrollLeft
   const previousScrollTop = container.scrollTop
   const previousClientRect = content.getBoundingClientRect()
-  const previousCenterOffsetX = (options.centerClientX || 0) - previousClientRect.left
-  const previousCenterOffsetY = (options.centerClientY || 0) - previousClientRect.top
+  const previousCenterOffsetX = (options.origin && options.origin.clientX || 0) - previousClientRect.left
+  const previousCenterOffsetY = (options.origin && options.origin.clientY || 0) - previousClientRect.top
 
   if (options.scalingProperty === 'transform') {
     const computedStyle = getComputedStyle(content)

@@ -17,8 +17,7 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
     if (target) {
       const zoomAmount = +options!.zoomAmount || defaultOptions.zoomAmount
       zoom(target, 1 - event.deltaY * zoomAmount, {
-        centerClientX: event.clientX,
-        centerClientY: event.clientY,
+        origin: event,
         minScale: +options!.minScale || defaultOptions.minScale,
         maxScale: +options!.maxScale || defaultOptions.maxScale,
         scalingProperty: options!.scalingProperty as ZoomOptions['scalingProperty'] || defaultOptions.scalingProperty,
