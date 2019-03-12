@@ -9,6 +9,20 @@
   "jsdelivr": "iife/index.min.js",
   "unpkg": "iife/index.min.js",
   "types": "es/index.d.ts",
+  "files": [
+    "es",
+    "cjs",
+    "iife",
+    "src"
+  ],
+  "keywords": [
+    "svg",
+    "pan",
+    "zoom",
+    "directive",
+    "vanilla",
+    "vanilla-js"
+  ],
   "scripts": {
     "clean": "rimraf docs/ es/ cjs/ iife/",
     "build": "npm-run-all -s clean -p build:es build:cjs build:iife build:demo",
