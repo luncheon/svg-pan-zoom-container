@@ -25,7 +25,7 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
 
   addEventListener('mousemove', event => {
     if (panningContainer && typeof clientX === 'number' && typeof clientY === 'number') {
-      pan(panningContainer, event.clientX - clientX, event.clientY - clientY)
+      pan(panningContainer, clientX - event.clientX, clientY - event.clientY)
       clientX = event.clientX
       clientY = event.clientY
       event.preventDefault()
