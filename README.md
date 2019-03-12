@@ -105,13 +105,10 @@ const observer = new MutationObserver(function (mutations) {
   });
 });
 
-observer.observe(
-  document.getElementById('my-svg-container'),
-  {
-    attributes: true,
-    attributeFilter: ['data-scale'],
-  },
-);
+observer.observe(document.getElementById('my-svg-container'), {
+  attributes: true,
+  attributeFilter: ['data-scale'],
+});
 ```
 
 ### Pan (scroll) observation

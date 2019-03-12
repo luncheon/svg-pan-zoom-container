@@ -89,10 +89,7 @@ input[type=number] { text-align: right; }
   });
 });
 
-observer.observe(
-  document.getElementById('container'),
-  {
-    attributes: true,
-    attributeFilter: ['data-scale'],
-  },
-);</script></body></html>
+observer.observe(document.getElementById('container'), {
+  attributes: true,
+  attributeFilter: ['data-scale'],
+});</script></body></html>
