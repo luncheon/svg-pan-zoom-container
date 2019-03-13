@@ -25,13 +25,11 @@
   ],
   "scripts": {
     "clean": "rimraf docs/ es/ cjs/ iife/",
-    "build": "npm-run-all -s clean -p build:es build:cjs build:iife build:demo",
-    "build:es": "tsc -p .",
-    "build:cjs": "tsc -p . -m commonjs --outDir cjs/",
-    "build:iife": "rollup -c && uglifyjs -m -b beautify=false,semicolons=false -o iife/index.min.js iife/index.js && copyfiles -f iife/index.min.js docs/",
+    "build": "npm-run-all -s clean -p build:*",
+    "build:ts": "node build.js",
     "build:demo": "pug src/demo/index.pug -o docs/ -O package.json",
     "watch": "npm-run-all -s clean -p watch:*",
-    "watch:iife": "npm run build:iife -- -w",
+    "watch:ts": "sane \"npm run build:ts\" --glob=src/**/*.ts",
     "watch:demo": "npm run build:demo -- -w"
   },
   "devDependencies": {
@@ -40,7 +38,7 @@
     "pug-cli": "^1.0.0-alpha6",
     "rimraf": "^2.6.3",
     "rollup": "^1.6.0",
-    "rollup-plugin-typescript3": "^1.1.2",
+    "sane": "^4.0.3",
     "typescript": "^3.3.3333",
     "uglify-js": "^3.4.9"
   }
