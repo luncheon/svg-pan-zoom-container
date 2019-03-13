@@ -41,8 +41,8 @@ html
         input#scale(type="number" value="100.00" min="100.00" max="1000.00" step="1.00" style="padding-right: 1em;" oninput="svgPanZoomContainer.setScale(document.getElementById('container'), +this.value / 100)")
         span.monospaced(style="position: absolute; right: .5em; bottom: .25em;") %
       button#reset.ml4(type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))") Reset
-    //- script(src=`https://cdn.jsdelivr.net/npm/${name}@${version}`)
-    script(src="index.min.js")
+    script(src=`https://cdn.jsdelivr.net/npm/${name}@${version}`)
+    //- script(src="index.min.js")
     script.
       new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
