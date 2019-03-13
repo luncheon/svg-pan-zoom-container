@@ -9,7 +9,10 @@ Very easy to use and lightweight (1.3kB minified gzipped) with no dependencies.
 ## Usage
 
 1. Load this module.
-2. Add `data-zoom-on-wheel` attribute and `data-pan-on-drag` attribute to the parent element of the inline SVG element.
+2. Diddle the parent element of the inline SVG element:
+    * Add `data-zoom-on-wheel` attribute.
+    * Add `data-pan-on-drag` attribute.
+    * Make sure that the container's `height` is not `"auto"`. The container's `height` must not be calculated from its content.
 
 That's it!
 
@@ -22,6 +25,7 @@ Please set them appropriately.
 <div
   data-zoom-on-wheel
   data-pan-on-drag
+  style="height: 80vh;"
 >
   <svg
     viewBox="0 0 100 100"
@@ -31,6 +35,8 @@ Please set them appropriately.
   </svg>
 </div>
 ```
+
+[Run on CodePen](https://codepen.io/luncheon/pen/GeOVpw)
 
 
 ## Installation
@@ -55,15 +61,16 @@ import 'svg-pan-zoom-container'
 ## Options
 
 Some options can be specified as `data-zoom-on-wheel` and `data-pan-on-drag` attribute value.  
-Option name and value should be separated by colon.  
-Multiple options should be separated by semicolon.
+Option name and value should be separated by colon (:).  
+Multiple options should be separated by semicolon (;).
 
 ### Example
 
 ```html
 <div
   data-zoom-on-wheel="zoom-amount: 0.01; max-scale: 20;"
-  data-pan-on-drag="button: right"
+  data-pan-on-drag="button: right;"
+  style="height: 80vh;"
 >
   <svg
     viewBox="0 0 100 100"
@@ -73,6 +80,8 @@ Multiple options should be separated by semicolon.
   </svg>
 </div>
 ```
+
+[Run on CodePen](https://codepen.io/luncheon/pen/wOPVew)
 
 ### Options for `data-zoom-on-wheel`
 
