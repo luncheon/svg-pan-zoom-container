@@ -16,7 +16,7 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
     const [target, options] = findTargetAndParseOptions(event.target as Element, attributeName)
     if (target) {
       const zoomAmount = +options!.zoomAmount || defaultOptions.zoomAmount
-      zoom(target, 1 - event.deltaY * zoomAmount, {
+      zoom(target, (1 + zoomAmount) ** -event.deltaY, {
         origin: event,
         minScale: +options!.minScale || defaultOptions.minScale,
         maxScale: +options!.maxScale || defaultOptions.maxScale,
