@@ -5,42 +5,42 @@ export interface PanOnDragOptions {
   readonly button: 'left' | 'right'
 }
 
-export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOptions) {
-  let panningContainer: HTMLElement | undefined
-  let clientX: number | undefined
-  let clientY: number | undefined
+const preventDefault = (event: Event) => event.preventDefault()
 
+export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOptions) {
   addEventListener('mousedown', event => {
     if (event.button !== 0 && event.button !== 2) {
       return
     }
     const [target, options] = findTargetAndParseOptions(event.target as Element, attributeName)
-    if (options && isPanButtonPressed(event, options, defaultOptions)) {
-      panningContainer = target as HTMLElement
-      clientX = event.clientX
-      clientY = event.clientY
+    if (!target || !options || !isPanButtonPressed(event, options, defaultOptions)) {
+      return
+    }
+    event.preventDefault()
+
+    let previousClientX = event.clientX
+    let previousClientY = event.clientY
+
+    const onMouseMove = (event: MouseEvent) => {
+      pan(
+        target,
+        previousClientX - event.clientX,
+        previousClientY - event.clientY,
+      )
+      previousClientX = event.clientX
+      previousClientY = event.clientY
       event.preventDefault()
     }
-  })
 
-  addEventListener('mousemove', event => {
-    if (panningContainer && typeof clientX === 'number' && typeof clientY === 'number') {
-      pan(panningContainer, clientX - event.clientX, clientY - event.clientY)
-      clientX = event.clientX
-      clientY = event.clientY
-      event.preventDefault()
+    const onMouseUp = () => {
+      removeEventListener('mouseup', onMouseUp)
+      removeEventListener('mousemove', onMouseMove)
+      removeEventListener('contextmenu', preventDefault)
     }
-  })
 
-  addEventListener('mouseup', () => {
-    panningContainer = clientX = clientY = undefined
-  })
-
-  addEventListener('contextmenu', event => {
-    const [, options] = findTargetAndParseOptions(event.target as Element, attributeName)
-    if (options && isPanButtonPressed(event, options, defaultOptions)) {
-      event.preventDefault()
-    }
+    addEventListener('mouseup', onMouseUp)
+    addEventListener('mousemove', onMouseMove)
+    addEventListener('contextmenu', preventDefault)
   })
 }
 
