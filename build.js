@@ -1,3 +1,6 @@
+const now = () => new Date().toLocaleTimeString()
+console.log(`[${now()}] build started`)
+
 const options = {
   rollup: {
     input: 'es/index.js',
@@ -17,6 +20,7 @@ const options = {
 const ts = require('typescript')
 const { rollup } = require('rollup')
 const { minify } = require('uglify-js')
+const gzipSize = require('gzip-size')
 const fs = require('fs')
 
 const tsDiagnosticLoggers = {
@@ -49,17 +53,17 @@ function tsBuild(fileNames, options) {
   }
 }
 
-console.log('building es module...')
+console.log(`[${now()}] building es module...`)
 tsBuild(tsConfig.fileNames, tsConfig.options)
 
-console.log('building cjs module...')
+console.log(`[${now()}] building cjs module...`)
 tsBuild(tsConfig.fileNames, { ...tsConfig.options, module: ts.ModuleKind.CommonJS, outDir: 'cjs' })
 
-console.log('building iife...')
+console.log(`[${now()}] building iife...`)
 rollup(options.rollup)
   .then(bundle => bundle.write(options.rollup.output))
   .then(output => {
-    console.log('building minified iife...')
+    console.log(`[${now()}] building minified iife...`)
     if (output.output.length !== 1) {
       throw Error(`output length is ${output.length} but 1 is required`)
     }
@@ -74,6 +78,9 @@ rollup(options.rollup)
       fs.writeFileSync(options.rollup.output.file.replace(/\.js$/, '.min.js'), minification.code, 'utf8')
       fs.existsSync('docs') || fs.mkdirSync('docs')
       fs.writeFileSync('docs/index.min.js', minification.code, 'utf8')
+      return gzipSize(minification.code)
+    } else {
+      throw Error('no code emitted')
     }
   })
-  .then(() => console.log('build complete\n'))
+  .then(gzippedSize => console.log(`[${now()}] build complete\nminified gzipped iife module size: ${gzippedSize} B (${gzippedSize / 1024} kB)\n`))
