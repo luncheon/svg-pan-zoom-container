@@ -10,8 +10,8 @@ Very easy to use and lightweight (1.3kB minified gzipped) with no dependencies.
 
 1. Load this module.
 2. Diddle the parent element of the inline SVG element:
-    * Add `data-zoom-on-wheel` attribute.
-    * Add `data-pan-on-drag` attribute.
+    * Add `data-zoom-on-wheel` attribute to add zoom-on-wheel behavior.
+    * Add `data-pan-on-drag` attribute to add pan-on-drag behavior.
     * Make sure that the container's `height` is not `"auto"`. The container's `height` must not be calculated from its content.
 
 That's it!
