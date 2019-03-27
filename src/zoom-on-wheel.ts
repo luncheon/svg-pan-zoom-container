@@ -1,5 +1,5 @@
 import { zoom, ZoomOptions } from './zoom'
-import { findTargetAndParseOptions } from './utils'
+import { findTargetAndParseOptions, nonPassive } from './utils'
 
 export interface ZoomOnWheelOptions extends ZoomOptions {
   readonly zoomAmount: number
@@ -24,5 +24,5 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
       })
       event.preventDefault()
     }
-  })
+  }, nonPassive)
 }

@@ -34,3 +34,22 @@ export function findTargetAndParseOptions(element: Element | null, attributeName
   const target = closest(element, `[${attributeName}]`)
   return target ? [target, parseOptions(target.getAttribute(attributeName))] : []
 }
+
+function noop() {}
+
+let passiveSupported = false;
+
+try {
+  const options = Object.defineProperty({}, 'passive', {
+    get() {
+      passiveSupported = true;
+    }
+  })
+
+  addEventListener('t', noop, options);
+  removeEventListener('t', noop, options);
+} catch(err) {
+  passiveSupported = false;
+}
+
+export const nonPassive: AddEventListenerOptions | undefined = passiveSupported ? { passive: false } : undefined;
