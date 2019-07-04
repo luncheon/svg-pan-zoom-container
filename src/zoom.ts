@@ -7,13 +7,17 @@ export interface ZoomOptions {
   readonly scalingProperty?: 'transform' | 'width/height'
 }
 
-export function getScale(container: Element) {
-  return +(container && container.getAttribute('data-scale') || 1)
+export function getScale(container: Element, options: ZoomOptions = {}) {
+  if (options.scalingProperty === 'transform') {
+    return +(container && container.getAttribute('data-scale') || 1)
+  } else {
+    return container.firstElementChild!.clientWidth / container.clientWidth
+  }
 }
 
 export function setScale(container: Element, value: number, options: ZoomOptions = {}) {
   const content = container.firstElementChild as HTMLElement | SVGElement
-  const previousScale = options.scalingProperty === 'transform' ? getScale(container) : content.clientWidth / container.clientWidth
+  const previousScale = getScale(container, options)
   const scale = clamp(value, options.minScale || 1, options.maxScale || 10)
   if (scale === previousScale) {
     return
@@ -52,7 +56,7 @@ export function resetScale(container: Element, options?: ZoomOptions) {
 }
 
 export function zoom(container: Element, ratio: number, options?: ZoomOptions) {
-  setScale(container, getScale(container) * ratio, options)
+  setScale(container, getScale(container, options) * ratio, options)
 }
 
 function minus(n: number) {
