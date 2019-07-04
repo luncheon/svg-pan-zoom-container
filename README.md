@@ -164,7 +164,7 @@ container.scrollLeft += deltaX
 container.scrollTop += deltaY
 ```
 
-### getScale(container)
+### getScale(container[, options])
 
 Returns current scale.  
 The return value is a 1-based fraction, not a percentage.
