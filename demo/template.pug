@@ -11,8 +11,9 @@ html
     link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Comfortaa|Roboto:300")
     link(rel="preload" as="script" href="https://www.google-analytics.com/analytics.js")
     style.
+      * { flex: none; }
       html, body, svg { height: 100%; }
-      body { margin: 8px 16px; font-family: Roboto,sans-serif; font-weight: 300; }
+      body { margin: 8px 16px; font-family: Roboto,sans-serif; font-weight: 300; display: flex; flex-direction: column; }
       header { display: flex; align-items: center; margin: .5em 0; }
       h1 { margin: 0; font-family: Comfortaa; font-weight: 400; font-size: 2.5rem; }
       input,button {
@@ -34,9 +35,9 @@ html
         img(src="https://cdn.jsdelivr.net/npm/octicons@7.0.1/build/svg/mark-github.svg" alt="GitHub" style="height: 2.5rem; margin-left: 1em; vertical-align: bottom;")
     p= description
 
-    div#container(data-pan-on-drag data-zoom-on-wheel style="border: 1px solid #ccc; box-shadow: 0 0 8px #aaa; width: 80vw; height: 80vw;")
+    div#container(data-pan-on-drag data-zoom-on-wheel style="flex: auto; border: 1px solid #ccc; box-shadow: 0 0 8px #aaa; width: 100%; height: 100%;")
       include ./sample.svg
-    div#zoom-controller(style="font-size: .8125rem; margin: 8px 0;")
+    div#zoom-controller(style="font-size: .8125rem; margin: 8px 0 16px 0;")
       div(style="position: relative; display: inline-block;")
         input#scale(type="number" value="100.00" min="100.00" max="1000.00" step="1.00" style="padding-right: 1em;" oninput="svgPanZoomContainer.setScale(document.getElementById('container'), +this.value / 100)")
         span.monospaced(style="position: absolute; right: .5em; bottom: .25em;") %
