@@ -13,7 +13,7 @@ export function getScale(container: Element) {
 
 export function setScale(container: Element, value: number, options: ZoomOptions = {}) {
   const content = container.firstElementChild as HTMLElement | SVGElement
-  const previousScale = getScale(container)
+  const previousScale = options.scalingProperty === 'transform' ? getScale(container) : content.clientWidth / container.clientWidth
   const scale = clamp(value, options.minScale || 1, options.maxScale || 10)
   if (scale === previousScale) {
     return
@@ -38,7 +38,8 @@ export function setScale(container: Element, value: number, options: ZoomOptions
     // for Chrome
     content.setAttribute('transform', matrix as any as string)
   } else {
-    content.style.width = content.style.height = `${scale * 100}%`
+    content.style.width = `${scale * container.clientWidth}px`
+    content.style.height = `${scale * container.clientHeight}px`
   }
 
   container.setAttribute('data-scale', scale as any)
