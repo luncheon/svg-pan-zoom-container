@@ -20,7 +20,7 @@ This module does not care about the `viewBox` or `preserveAspectRatio`.
 Please set them appropriately.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.2"></script>
 
 <div
   data-zoom-on-wheel
@@ -54,7 +54,7 @@ import 'svg-pan-zoom-container'
 ### via CDN ([jsDelivr](https://www.jsdelivr.com/package/npm/svg-pan-zoom-container))
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.2"></script>
 ```
 
 
@@ -147,7 +147,7 @@ import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-containe
 #### When installing via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.2"></script>
 <script>
   const { pan, zoom, getScale, setScale, resetScale } = svgPanZoomContainer;
 </script>
