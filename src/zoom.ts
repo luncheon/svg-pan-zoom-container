@@ -9,15 +9,13 @@ export interface ZoomOptions {
 
 function moveScrollPosition(
   container: Element,
+  previousScrollLeft: number,
+  previousScrollTop: number,
   centerOffsetX: number,
   centerOffsetY: number,
   widthRatio: number,
   heightRatio: number,
 ) {
-  let previousScrollLeft = +container.getAttribute('data-scroll-left')!
-  let previousScrollTop = +container.getAttribute('data-scroll-top')!
-  Math.round(previousScrollLeft) !== container.scrollLeft && (previousScrollLeft = container.scrollLeft)
-  Math.round(previousScrollTop) !== container.scrollTop && (previousScrollTop = container.scrollTop)
   const scrollLeft = previousScrollLeft + centerOffsetX * widthRatio - centerOffsetX
   const scrollTop = previousScrollTop + centerOffsetY * heightRatio - centerOffsetY
   container.setAttribute('data-scroll-left', scrollLeft as any as string)
@@ -50,6 +48,10 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   const previousClientRect = content.getBoundingClientRect()
   const centerOffsetX = (origin && origin.clientX || 0) - previousClientRect.left
   const centerOffsetY = (origin && origin.clientY || 0) - previousClientRect.top
+  let previousScrollLeft = +container.getAttribute('data-scroll-left')!
+  let previousScrollTop = +container.getAttribute('data-scroll-top')!
+  Math.round(previousScrollLeft) !== container.scrollLeft && (previousScrollLeft = container.scrollLeft)
+  Math.round(previousScrollTop) !== container.scrollTop && (previousScrollTop = container.scrollTop)
   container.setAttribute('data-scale', scale as any as string)
 
   if (options.scalingProperty === 'transform') {
@@ -64,7 +66,7 @@ export function setScale(container: Element, value: number, options: ZoomOptions
     content.style.transform = matrix as any as string
     // for Chrome
     content.setAttribute('transform', matrix as any as string)
-    moveScrollPosition(container, centerOffsetX, centerOffsetY, actualRatio, actualRatio)
+    moveScrollPosition(container, previousScrollLeft, previousScrollTop, centerOffsetX, centerOffsetY, actualRatio, actualRatio)
   } else {
     const previousWidth = content.clientWidth
     const previousHeight = content.clientHeight
@@ -82,7 +84,7 @@ export function setScale(container: Element, value: number, options: ZoomOptions
     height = Math.max(height, container.clientHeight * minScale)
     content.style.width = `${width}px`
     content.style.height = `${height}px`
-    moveScrollPosition(container, centerOffsetX, centerOffsetY, width / previousWidth, height / previousHeight)
+    moveScrollPosition(container, previousScrollLeft, previousScrollTop, centerOffsetX, centerOffsetY, width / previousWidth, height / previousHeight)
   }
 }
 
