@@ -1,7 +1,7 @@
 # svg-pan-zoom-container
 
 A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.  
-Very easy to use and lightweight (1.4kB minified gzipped) with no dependencies.
+Very easy to use and lightweight (1.6kB minified gzipped) with no dependencies.
 
 [Demo](https://luncheon.github.io/svg-pan-zoom-container/)
 
