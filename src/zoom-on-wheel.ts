@@ -5,7 +5,7 @@ export interface ZoomOnWheelOptions extends ZoomOptions {
   readonly zoomAmount: number
 }
 
-export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOptions, initializationOptions: { noEmitStyle?: boolean } = {}) {
+export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOptions, initializationOptions: { readonly noEmitStyle?: boolean } = {}) {
   if (!initializationOptions.noEmitStyle) {
     (document.head || document.body || document.documentElement)
       .appendChild(document.createElement('style'))
@@ -26,7 +26,7 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
     }
   }, nonPassive)
 
-  addEventListener('resize', event => {
+  addEventListener('resize', () => {
     const targets = document.querySelectorAll(`[${attributeName}]`)
     for (let i = 0; i < targets.length; i++) {
       const target = targets[i]

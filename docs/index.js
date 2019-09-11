@@ -192,7 +192,7 @@ var svgPanZoomContainer = (function (exports) {
                 event.preventDefault();
             }
         }, nonPassive);
-        addEventListener('resize', function (event) {
+        addEventListener('resize', function () {
             var targets = document.querySelectorAll("[" + attributeName + "]");
             for (var i = 0; i < targets.length; i++) {
                 var target = targets[i];
