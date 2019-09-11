@@ -24,24 +24,26 @@ function moveScrollPosition(
   container.scrollTop = Math.round(scrollTop)
 }
 
-export function getScale(container: Element, options: ZoomOptions = {}) {
+export function getScale(container: HTMLElement, options: ZoomOptions = {}) {
   if (options.scalingProperty === 'transform') {
     return +(container && container.getAttribute('data-scale') || 1)
   } else {
     const content = container.firstElementChild as SVGSVGElement
     const bbox = content.getBBox()
-    return container.clientWidth / bbox.width < container.clientHeight / bbox.height ? content.clientWidth / container.clientWidth : content.clientHeight / container.clientHeight
+    const containerWidth = container.offsetWidth
+    const containerHeight = container.offsetHeight
+    return containerWidth / bbox.width < containerHeight / bbox.height ? content.clientWidth / containerWidth : content.clientHeight / containerHeight
   }
 }
 
-export function setScale(container: Element, value: number, options: ZoomOptions = {}) {
+export function setScale(container: HTMLElement, value: number, options: ZoomOptions = {}) {
   const minScale = options.minScale || 1
   const maxScale = options.maxScale || 10
   const origin = options.origin
   const content = container.firstElementChild as SVGSVGElement
   const previousScale = getScale(container, options)
   const scale = clamp(value, minScale, maxScale)
-  if (scale === previousScale) {
+  if (scale === previousScale && options.scalingProperty === 'transform') {
     return
   }
   const actualRatio = scale / previousScale
@@ -70,29 +72,32 @@ export function setScale(container: Element, value: number, options: ZoomOptions
   } else {
     const previousWidth = content.clientWidth
     const previousHeight = content.clientHeight
+    const containerWidth = container.offsetWidth
+    const containerHeight = container.offsetHeight
     const bbox = content.getBBox()
     let width: number
     let height: number
-    if (container.clientWidth / bbox.width < container.clientHeight / bbox.height) {
-      width = scale * container.clientWidth
-      height = scale * container.clientWidth * bbox.height / bbox.width
+    if (containerWidth / bbox.width < containerHeight / bbox.height) {
+      width = scale * containerWidth
+      height = width * bbox.height / bbox.width
     } else {
-      width = scale * container.clientHeight * bbox.width / bbox.height
-      height = scale * container.clientHeight
+      height = scale * containerHeight
+      width = height * bbox.width / bbox.height
     }
-    width = Math.max(width, container.clientWidth * minScale)
-    height = Math.max(height, container.clientHeight * minScale)
+    console.log(width, containerWidth, minScale)
+    width = Math.max(width, containerWidth * minScale)
+    height = Math.max(height, containerHeight * minScale)
     content.style.width = `${width}px`
     content.style.height = `${height}px`
     moveScrollPosition(container, previousScrollLeft, previousScrollTop, centerOffsetX, centerOffsetY, width / previousWidth, height / previousHeight)
   }
 }
 
-export function resetScale(container: Element, options?: ZoomOptions) {
+export function resetScale(container: HTMLElement, options?: ZoomOptions) {
   setScale(container, 1, options)
 }
 
-export function zoom(container: Element, ratio: number, options?: ZoomOptions) {
+export function zoom(container: HTMLElement, ratio: number, options?: ZoomOptions) {
   setScale(container, getScale(container, options) * ratio, options)
 }
 

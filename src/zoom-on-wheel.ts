@@ -1,5 +1,5 @@
 import { zoom, ZoomOptions } from './zoom'
-import { findTargetAndParseOptions, nonPassive } from './utils'
+import { findTargetAndParseOptions, nonPassive, parseOptions } from './utils'
 
 export interface ZoomOnWheelOptions extends ZoomOptions {
   readonly zoomAmount: number
@@ -14,7 +14,7 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
 
   addEventListener('wheel', event => {
     const [target, options] = findTargetAndParseOptions(event.target as Element, attributeName)
-    if (target) {
+    if (target instanceof HTMLElement) {
       const zoomAmount = +options!.zoomAmount || defaultOptions.zoomAmount
       zoom(target, (1 + zoomAmount) ** -event.deltaY, {
         origin: event,
@@ -25,4 +25,15 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
       event.preventDefault()
     }
   }, nonPassive)
+
+  addEventListener('resize', event => {
+    const targets = document.querySelectorAll(`[${attributeName}]`)
+    for (let i = 0; i < targets.length; i++) {
+      const target = targets[i]
+      if (target instanceof HTMLElement) {
+        const options = parseOptions(target.getAttribute(attributeName))
+        zoom(target, 1, options)
+      }
+    }
+  })
 }

@@ -19,7 +19,7 @@ const closest: (element: Element | null, selector: string) => Element | null =
     return element
   }
 
-function parseOptions(optionsString: string | undefined | null): Record<string, string> {
+export function parseOptions(optionsString: string | undefined | null): Record<string, string> {
   const options: Record<string, string> = {}
   if (optionsString) {
     for (const s of optionsString.split(';')) {

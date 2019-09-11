@@ -77,6 +77,7 @@ rollup(options.rollup)
     if (minification.code) {
       fs.writeFileSync(options.rollup.output.file.replace(/\.js$/, '.min.js'), minification.code, 'utf8')
       fs.existsSync('docs') || fs.mkdirSync('docs')
+      fs.writeFileSync('docs/index.js', output.output[0].code, 'utf8')
       fs.writeFileSync('docs/index.min.js', minification.code, 'utf8')
       return gzipSize(minification.code)
     } else {
