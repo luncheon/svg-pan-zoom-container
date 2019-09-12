@@ -154,7 +154,6 @@ var svgPanZoomContainer = (function (exports) {
                 height = scale * containerHeight;
                 width = height * bbox.width / bbox.height;
             }
-            console.log(width, containerWidth, minScale);
             width = Math.max(width, containerWidth * minScale);
             height = Math.max(height, containerHeight * minScale);
             content.style.width = width + "px";
