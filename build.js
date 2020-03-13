@@ -11,6 +11,9 @@ const options = {
     },
   },
   minify: {
+    compress: {
+      passes: 4,
+    },
     output: {
       semicolons: false,
     },
