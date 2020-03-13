@@ -101,8 +101,8 @@ var svgPanZoomContainer = (function (exports) {
         else {
             var content = container.firstElementChild;
             var bbox = content.getBBox();
-            var containerWidth = container.offsetWidth;
-            var containerHeight = container.offsetHeight;
+            var containerWidth = container.clientWidth;
+            var containerHeight = container.clientHeight;
             return containerWidth / bbox.width < containerHeight / bbox.height ? content.clientWidth / containerWidth : content.clientHeight / containerHeight;
         }
     }
@@ -141,8 +141,8 @@ var svgPanZoomContainer = (function (exports) {
         else {
             var previousWidth = content.clientWidth;
             var previousHeight = content.clientHeight;
-            var containerWidth = container.offsetWidth;
-            var containerHeight = container.offsetHeight;
+            var containerWidth = container.clientWidth;
+            var containerHeight = container.clientHeight;
             var bbox = content.getBBox();
             var width = void 0;
             var height = void 0;
@@ -176,7 +176,7 @@ var svgPanZoomContainer = (function (exports) {
         if (!initializationOptions.noEmitStyle) {
             (document.head || document.body || document.documentElement)
                 .appendChild(document.createElement('style'))
-                .textContent = "[" + attributeName + "]{overflow:scroll}[" + attributeName + "]>:first-child{width:100%;height:100%;vertical-align:middle;}";
+                .textContent = "[" + attributeName + "]{overflow:scroll}[" + attributeName + "]>:first-child{width:100%;height:100%;vertical-align:middle}";
         }
         addEventListener('wheel', function (event) {
             var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];

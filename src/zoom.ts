@@ -30,8 +30,8 @@ export function getScale(container: HTMLElement, options: ZoomOptions = {}) {
   } else {
     const content = container.firstElementChild as SVGSVGElement
     const bbox = content.getBBox()
-    const containerWidth = container.offsetWidth
-    const containerHeight = container.offsetHeight
+    const containerWidth = container.clientWidth
+    const containerHeight = container.clientHeight
     return containerWidth / bbox.width < containerHeight / bbox.height ? content.clientWidth / containerWidth : content.clientHeight / containerHeight
   }
 }
@@ -72,8 +72,8 @@ export function setScale(container: HTMLElement, value: number, options: ZoomOpt
   } else {
     const previousWidth = content.clientWidth
     const previousHeight = content.clientHeight
-    const containerWidth = container.offsetWidth
-    const containerHeight = container.offsetHeight
+    const containerWidth = container.clientWidth
+    const containerHeight = container.clientHeight
     const bbox = content.getBBox()
     let width: number
     let height: number
