@@ -5,11 +5,10 @@
     "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
-    "preserveConstEnums": true,
     "strict": true,
-    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "newLine": "LF",
     "outDir": "es/"
   },
