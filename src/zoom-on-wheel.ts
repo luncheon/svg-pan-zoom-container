@@ -20,7 +20,6 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
         origin: event,
         minScale: +options!.minScale || defaultOptions.minScale,
         maxScale: +options!.maxScale || defaultOptions.maxScale,
-        scalingProperty: options!.scalingProperty as ZoomOptions['scalingProperty'] || defaultOptions.scalingProperty,
       })
       event.preventDefault()
     }

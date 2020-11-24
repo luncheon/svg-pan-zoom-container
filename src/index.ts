@@ -17,6 +17,5 @@ zoomOnWheel(
     minScale: 1,
     maxScale: 10,
     zoomAmount: .002,
-    scalingProperty: 'width/height',
   },
 )

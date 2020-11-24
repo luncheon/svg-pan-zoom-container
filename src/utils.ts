@@ -1,5 +1,3 @@
-export const DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || window.MSCSSMatrix
-
 export function clamp(value: number, min: number, max: number): number {
   return value < min ? min : value > max ? max : value
 }

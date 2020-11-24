@@ -6,7 +6,6 @@ var svgPanZoomContainer = (function (exports) {
         container.scrollTop += deltaY;
     }
 
-    var DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || window.MSCSSMatrix;
     function clamp(value, min, max) {
         return value < min ? min : value > max ? max : value;
     }
@@ -85,26 +84,12 @@ var svgPanZoomContainer = (function (exports) {
         return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0);
     }
 
-    function moveScrollPosition(container, previousScrollLeft, previousScrollTop, centerOffsetX, centerOffsetY, widthRatio, heightRatio) {
-        var scrollLeft = previousScrollLeft + centerOffsetX * widthRatio - centerOffsetX;
-        var scrollTop = previousScrollTop + centerOffsetY * heightRatio - centerOffsetY;
-        container.setAttribute('data-scroll-left', scrollLeft);
-        container.setAttribute('data-scroll-top', scrollTop);
-        container.scrollLeft = Math.round(scrollLeft);
-        container.scrollTop = Math.round(scrollTop);
-    }
-    function getScale(container, options) {
-        if (options === void 0) { options = {}; }
-        if (options.scalingProperty === 'transform') {
-            return +(container && container.getAttribute('data-scale') || 1);
-        }
-        else {
-            var content = container.firstElementChild;
-            var bbox = content.getBBox();
-            var containerWidth = container.clientWidth;
-            var containerHeight = container.clientHeight;
-            return containerWidth / bbox.width < containerHeight / bbox.height ? content.clientWidth / containerWidth : content.clientHeight / containerHeight;
-        }
+    function getScale(container) {
+        var content = container.firstElementChild;
+        var bbox = content.getBBox();
+        var _a = container.getBoundingClientRect(), containerWidth = _a.width, containerHeight = _a.height;
+        var _b = content.getBoundingClientRect(), width = _b.width, height = _b.height;
+        return containerWidth / bbox.width < containerHeight / bbox.height ? width / containerWidth : height / containerHeight;
     }
     function setScale(container, value, options) {
         if (options === void 0) { options = {}; }
@@ -112,63 +97,66 @@ var svgPanZoomContainer = (function (exports) {
         var maxScale = options.maxScale || 10;
         var origin = options.origin;
         var content = container.firstElementChild;
-        var previousScale = getScale(container, options);
+        var previousScale = getScale(container);
         var scale = clamp(value, minScale, maxScale);
-        if (scale === previousScale && options.scalingProperty === 'transform') {
+        if (scale === previousScale) {
             return;
         }
-        var actualRatio = scale / previousScale;
         var previousClientRect = content.getBoundingClientRect();
         var centerOffsetX = (origin && origin.clientX || 0) - previousClientRect.left;
         var centerOffsetY = (origin && origin.clientY || 0) - previousClientRect.top;
-        var previousScrollLeft = +container.getAttribute('data-scroll-left');
-        var previousScrollTop = +container.getAttribute('data-scroll-top');
-        Math.round(previousScrollLeft) !== container.scrollLeft && (previousScrollLeft = container.scrollLeft);
-        Math.round(previousScrollTop) !== container.scrollTop && (previousScrollTop = container.scrollTop);
+        var previousScrollLeft = container.scrollLeft - (parseFloat(content.style.marginLeft) || 0);
+        var previousScrollTop = container.scrollTop - (parseFloat(content.style.marginTop) || 0);
         container.setAttribute('data-scale', scale);
-        if (options.scalingProperty === 'transform') {
-            var computedStyle = getComputedStyle(content);
-            var transformOrigin = computedStyle.transformOrigin.split(' ').map(parseFloat);
-            var matrix = new DomMatrix(computedStyle.transform);
-            matrix = matrix.translate.apply(matrix, transformOrigin.map(minus));
-            matrix.d = matrix.a === matrix.d ? scale : matrix.d * actualRatio;
-            matrix.a = scale;
-            matrix = matrix.translate.apply(matrix, transformOrigin);
-            content.style.transform = matrix;
-            content.setAttribute('transform', matrix);
-            moveScrollPosition(container, previousScrollLeft, previousScrollTop, centerOffsetX, centerOffsetY, actualRatio, actualRatio);
-        }
-        else {
-            var previousWidth = content.clientWidth;
-            var previousHeight = content.clientHeight;
-            var containerWidth = container.clientWidth;
-            var containerHeight = container.clientHeight;
+        var containerRect = container.getBoundingClientRect();
+        var width;
+        var height;
+        {
             var bbox = content.getBBox();
-            var width = void 0;
-            var height = void 0;
-            if (containerWidth / bbox.width < containerHeight / bbox.height) {
-                width = scale * containerWidth;
+            if (containerRect.width / bbox.width < containerRect.height / bbox.height) {
+                width = scale * containerRect.width;
                 height = width * bbox.height / bbox.width;
             }
             else {
-                height = scale * containerHeight;
+                height = scale * containerRect.height;
                 width = height * bbox.width / bbox.height;
             }
-            width = Math.max(width, containerWidth * minScale);
-            height = Math.max(height, containerHeight * minScale);
-            content.style.width = width + "px";
-            content.style.height = height + "px";
-            moveScrollPosition(container, previousScrollLeft, previousScrollTop, centerOffsetX, centerOffsetY, width / previousWidth, height / previousHeight);
+        }
+        width = Math.max(width, containerRect.width * minScale);
+        height = Math.max(height, containerRect.height * minScale);
+        content.style.width = width + "px";
+        content.style.height = height + "px";
+        content.style.margin = '0';
+        var contentRect = content.getBoundingClientRect();
+        var scrollLeft = previousScrollLeft + centerOffsetX * width / previousClientRect.width - centerOffsetX;
+        if (scrollLeft < 0) {
+            content.style.marginLeft = -scrollLeft + "px";
+            container.scrollLeft = 0;
+        }
+        else {
+            content.style.marginRight = containerRect.right - contentRect.right + scrollLeft + "px";
+            container.scrollLeft = Math.round(scrollLeft);
+            content.style.marginLeft = container.scrollLeft - scrollLeft + "px";
+        }
+        var scrollTop = previousScrollTop + centerOffsetY * height / previousClientRect.height - centerOffsetY;
+        if (scrollTop < 0) {
+            content.style.marginTop = -scrollTop + "px";
+            container.scrollTop = 0;
+        }
+        else {
+            content.style.marginBottom = containerRect.bottom - contentRect.bottom + scrollTop + "px";
+            container.scrollTop = Math.round(scrollTop);
+            content.style.marginTop = container.scrollTop - scrollTop + "px";
         }
     }
-    function resetScale(container, options) {
-        setScale(container, 1, options);
+    function resetScale(container) {
+        var content = container.firstElementChild;
+        container.scrollLeft = container.scrollTop = 0;
+        content.style.width = content.style.height = content.style.margin = '';
+        container.setAttribute('data-scale', 1);
     }
     function zoom(container, ratio, options) {
-        setScale(container, getScale(container, options) * ratio, options);
-    }
-    function minus(n) {
-        return -n;
+        setScale(container, getScale(container) * ratio, options);
     }
 
     function zoomOnWheel(attributeName, defaultOptions, initializationOptions) {
@@ -186,7 +174,6 @@ var svgPanZoomContainer = (function (exports) {
                     origin: event,
                     minScale: +options.minScale || defaultOptions.minScale,
                     maxScale: +options.maxScale || defaultOptions.maxScale,
-                    scalingProperty: options.scalingProperty || defaultOptions.scalingProperty,
                 });
                 event.preventDefault();
             }
@@ -210,7 +197,6 @@ var svgPanZoomContainer = (function (exports) {
         minScale: 1,
         maxScale: 10,
         zoomAmount: .002,
-        scalingProperty: 'width/height',
     });
 
     exports.getScale = getScale;

@@ -90,7 +90,6 @@ Multiple options should be separated by semicolon (;).
 | zoom-amount      | number                        | 0.002          | Zoom amount per `deltaY` of wheel events. |
 | min-scale        | number                        | 1              | Minimum scale.                            |
 | max-scale        | number                        | 10             | Maximum scale.                            |
-| scaling-property | "transform" \| "width/height" | "width/height" | Property to be modified for scaling.<br>If the `"transform"` is specified, both `transform` attribute and `transform` CSS property are modified (due to browser compatibility).<br>If the `"width/height"` is specified, `width` and `height` CSS properties are modified. |
 
 ### Options for `data-pan-on-drag`
 
@@ -184,15 +183,12 @@ const options = {
   },
   minScale: 1,
   maxScale: 10,
-  scalingProperty: 'width/height',  // or 'transform'
 };
 ```
 
-See [options for data-zoom-on-wheel](#user-content-options-for-data-zoom-on-wheel) for details of `scalingProperty`.
+### resetScale(container)
 
-### resetScale(container[, options])
-
-Equivalents to `setScale(container, 1, options)`.
+Resets scale and scroll position.
 
 ### zoom(container, ratio[, options])
 
