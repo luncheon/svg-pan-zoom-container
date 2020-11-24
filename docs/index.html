@@ -73,7 +73,7 @@ input[type=number] { text-align: right; }
 		C366.46,160.803,375.108,169.006,382.816,178.155z" style="fill: rgb(75, 75, 75);"></path>
 </g>
 </svg>
-</div><div id="zoom-controller" style="font-size: .8125rem; margin: 8px 0 16px 0;"><div style="position: relative; display: inline-block;"><input id="scale" type="number" value="100.00" min="100.00" max="100000.00" step="1.00" style="padding-right: 1em;" oninput="window.inputting=true;svgPanZoomContainer.setScale(document.getElementById('container'),+this.value/100)"><span class="monospaced" style="position: absolute; right: .5em; bottom: .25em;">%</span></div><button class="ml4" id="reset" type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))">Reset</button></div><script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.2.7"></script><script>new MutationObserver(function (mutations) {
+</div><div id="zoom-controller" style="font-size: .8125rem; margin: 8px 0 16px 0;"><div style="position: relative; display: inline-block;"><input id="scale" type="number" value="100.00" min="100.00" max="100000.00" step="1.00" style="padding-right: 1em;" oninput="window.inputting=true;svgPanZoomContainer.setScale(document.getElementById('container'),+this.value/100)"><span class="monospaced" style="position: absolute; right: .5em; bottom: .25em;">%</span></div><button class="ml4" id="reset" type="button" onclick="svgPanZoomContainer.resetScale(document.getElementById('container'))">Reset</button></div><script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.0"></script><script>new MutationObserver(function (mutations) {
   if (window.inputting) {
     delete window.inputting
   } else {
