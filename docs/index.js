@@ -12,7 +12,7 @@ var svgPanZoomContainer = (function (exports) {
     var matches = Element.prototype.matches ||
         Element.prototype.webkitMatchesSelector ||
         Element.prototype.msMatchesSelector;
-    var closest = Element.prototype.closest
+    var closest = !!Element.prototype.closest
         ? function (element, selector) { return element && element.closest(selector); }
         : function (element, selector) {
             while (element && !matches.call(element, selector)) {
@@ -204,6 +204,8 @@ var svgPanZoomContainer = (function (exports) {
     exports.resetScale = resetScale;
     exports.setScale = setScale;
     exports.zoom = zoom;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
 
     return exports;
 

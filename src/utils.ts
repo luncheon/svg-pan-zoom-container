@@ -8,7 +8,7 @@ const matches =
   Element.prototype.msMatchesSelector
 
 const closest: (element: Element | null, selector: string) => Element | null =
-  Element.prototype.closest
+  !!Element.prototype.closest
   ? (element, selector) => element && element.closest(selector)
   : (element, selector) => {
     while (element && !matches.call(element, selector)) {
