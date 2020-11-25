@@ -3,7 +3,7 @@
 A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.  
 Very easy to use and lightweight (1.6kB minified gzipped) with no dependencies.
 
-[Demo](https://luncheon.github.io/svg-pan-zoom-container/)
+[Demo](https://luncheon.github.io/svg-pan-zoom-container/index.html)
 
 
 ## Usage
@@ -16,9 +16,6 @@ Very easy to use and lightweight (1.6kB minified gzipped) with no dependencies.
 
 That's it!
 
-This module does not care about the `viewBox` or `preserveAspectRatio`.  
-Please set them appropriately.
-
 ```html
 <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.0"></script>
 
@@ -27,10 +24,7 @@ Please set them appropriately.
   data-pan-on-drag
   style="height: 80vh;"
 >
-  <svg
-    viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid meet"
-  >
+  <svg viewBox="0 0 100 100">
     <circle cx="50" cy="50" r="50" />
   </svg>
 </div>
@@ -68,14 +62,11 @@ Multiple options should be separated by semicolon (;).
 
 ```html
 <div
-  data-zoom-on-wheel="zoom-amount: 0.01; max-scale: 20;"
+  data-zoom-on-wheel="zoom-amount: 0.01; min-scale: 0.3; max-scale: 20;"
   data-pan-on-drag="button: right;"
   style="height: 80vh;"
 >
-  <svg
-    viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid meet"
-  >
+  <svg viewBox="0 0 100 100">
     <circle cx="50" cy="50" r="50" />
   </svg>
 </div>
