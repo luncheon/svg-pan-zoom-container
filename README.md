@@ -17,7 +17,7 @@ Very easy to use and lightweight (1.6kB minified gzipped) with no dependencies.
 That's it!
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.1"></script>
 
 <div
   data-zoom-on-wheel
@@ -48,7 +48,7 @@ import 'svg-pan-zoom-container'
 ### via CDN ([jsDelivr](https://www.jsdelivr.com/package/npm/svg-pan-zoom-container))
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.1"></script>
 ```
 
 
@@ -137,7 +137,7 @@ import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-containe
 #### When installing via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom-container@0.3.1"></script>
 <script>
   const { pan, zoom, getScale, setScale, resetScale } = svgPanZoomContainer;
 </script>
