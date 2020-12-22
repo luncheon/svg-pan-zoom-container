@@ -28,9 +28,9 @@ export function parseOptions(optionsString: string | undefined | null): Record<s
   return options
 }
 
-export function findTargetAndParseOptions(element: Element | null, attributeName: string): [Element, Record<string, string>] | [] {
+export function findTargetAndParseOptions(element: Element | null, attributeName: string): [HTMLElement, Record<string, string>] | [] {
   const target = closest(element, `[${attributeName}]`)
-  return target ? [target, parseOptions(target.getAttribute(attributeName))] : []
+  return target instanceof HTMLElement ? [target, parseOptions(target.getAttribute(attributeName))] : []
 }
 
 function noop() {}

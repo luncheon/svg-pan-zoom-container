@@ -111,7 +111,8 @@ observer.observe(document.getElementById('my-svg-container'), {
 
 ### Pan (scroll) observation
 
-`scroll` event is fired by panning since this module uses `overflow: scroll` style for scrolling.
+Currently, panning observation is not supported.  
+Only when the scale > 1, `scroll` event can be used.
 
 ```javascript
 document
@@ -145,14 +146,7 @@ import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-containe
 
 ### pan(container, deltaX, deltaY)
 
-Pans.  
-Currently implemented as follows.
-
-```javascript
-// IE11 does not support `Element.prototype.scrollBy`.
-container.scrollLeft += deltaX
-container.scrollTop += deltaY
-```
+Pans.
 
 ### getScale(container[, options])
 
