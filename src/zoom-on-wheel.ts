@@ -9,7 +9,7 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
   if (!initializationOptions.noEmitStyle) {
     (document.head || document.body || document.documentElement)
       .appendChild(document.createElement('style'))
-      .textContent = `[${attributeName}]{overflow:scroll}[${attributeName}]>:first-child{width:100%;height:100%;vertical-align:middle}`
+      .textContent = `[${attributeName}]{overflow:scroll}[${attributeName}]>:first-child{width:100%;height:100%;vertical-align:middle;transform-origin:0 0}`
   }
 
   addEventListener('wheel', event => {

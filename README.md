@@ -1,7 +1,7 @@
 # svg-pan-zoom-container
 
 A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.  
-Very easy to use and lightweight (1.6kB minified gzipped) with no dependencies.
+Very easy to use and lightweight (1.5kB minified gzipped) with no dependencies.
 
 [Demo](https://luncheon.github.io/svg-pan-zoom-container/index.html)
 
@@ -91,35 +91,21 @@ Multiple options should be separated by semicolon (;).
 
 ## Observation
 
-### Zoom (scale) observation
-
-This module does not fire any events but set `data-scale` attribute on the container element.  
-Therefore, `MutationObserver` can be used to observe the scale as follows:
+Observe the `transform` attribute of the SVG element using `MutationObserver`.
 
 ```javascript
+const container = document.getElementById('my-svg-container')
+
 const observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    console.log('scale:', mutation.target.dataset.scale);
+    console.log('scale:', getScale(container));
   });
 });
 
-observer.observe(document.getElementById('my-svg-container'), {
+observer.observe(container.firstElementChild, {
   attributes: true,
-  attributeFilter: ['data-scale'],
+  attributeFilter: ['transform'],
 });
-```
-
-### Pan (scroll) observation
-
-Currently, panning observation is not supported.  
-Only when the scale > 1, `scroll` event can be used.
-
-```javascript
-document
-  .getElementById('my-svg-container')
-  .addEventListener('scroll', function () {
-    console.log({ scrollLeft: this.scrollLeft, scrollTop: this.scrollTop });
-  });
 ```
 
 

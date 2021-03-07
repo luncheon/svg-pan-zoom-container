@@ -1,8 +1,29 @@
 var svgPanZoomContainer = (function (exports) {
     'use strict';
 
+    var DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || window.MSCSSMatrix;
     function clamp(value, min, max) {
         return value < min ? min : value > max ? max : value;
+    }
+    function getScaleAndOffset(container, content) {
+        var matrix = new DomMatrix(content.style.transform);
+        return [matrix.a, container.scrollLeft - matrix.e, container.scrollTop - matrix.f];
+    }
+    function setScaleAndOffset(container, content, scale, offsetX, offsetY) {
+        var scrollX = Math.round(Math.max(offsetX, 0));
+        var scrollY = Math.round(Math.max(offsetY, 0));
+        content.setAttribute('transform', content.style.transform = "matrix(" + scale + ",0,0," + scale + "," + (scrollX - offsetX) + "," + (scrollY - offsetY) + ")");
+        content.style.margin = 0;
+        container.scrollLeft = scrollX;
+        container.scrollTop = scrollY;
+        if (container.scrollLeft !== scrollX) {
+            content.style.marginRight = scrollX + "px";
+            container.scrollLeft = scrollX;
+        }
+        if (container.scrollTop !== scrollY) {
+            content.style.marginBottom = scrollY + "px";
+            container.scrollTop = scrollY;
+        }
     }
     var matches = Element.prototype.matches ||
         Element.prototype.webkitMatchesSelector ||
@@ -46,101 +67,10 @@ var svgPanZoomContainer = (function (exports) {
     }
     var nonPassive = passiveSupported ? { passive: false } : undefined;
 
-    function getScale(container) {
-        var content = container.firstElementChild;
-        var bbox = content.getBBox();
-        var _a = container.getBoundingClientRect(), containerWidth = _a.width, containerHeight = _a.height;
-        var _b = content.getBoundingClientRect(), width = _b.width, height = _b.height;
-        return containerWidth / bbox.width < containerHeight / bbox.height ? width / containerWidth : height / containerHeight;
-    }
-    function setScale(container, value, options) {
-        if (options === void 0) { options = {}; }
-        var minScale = options.minScale || 1;
-        var maxScale = options.maxScale || 10;
-        var origin = options.origin;
-        var content = container.firstElementChild;
-        var previousScale = getScale(container);
-        var scale = clamp(value, minScale, maxScale);
-        if (scale === previousScale) {
-            return;
-        }
-        var previousClientRect = content.getBoundingClientRect();
-        var centerOffsetX = (origin && origin.clientX || 0) - previousClientRect.left;
-        var centerOffsetY = (origin && origin.clientY || 0) - previousClientRect.top;
-        var previousScrollLeft = container.scrollLeft - (parseFloat(content.style.marginLeft) || 0);
-        var previousScrollTop = container.scrollTop - (parseFloat(content.style.marginTop) || 0);
-        container.setAttribute('data-scale', scale);
-        var containerRect = container.getBoundingClientRect();
-        var width;
-        var height;
-        {
-            var bbox = content.getBBox();
-            if (containerRect.width / bbox.width < containerRect.height / bbox.height) {
-                width = scale * containerRect.width;
-                height = width * bbox.height / bbox.width;
-            }
-            else {
-                height = scale * containerRect.height;
-                width = height * bbox.width / bbox.height;
-            }
-        }
-        width = Math.max(width, containerRect.width * minScale);
-        height = Math.max(height, containerRect.height * minScale);
-        content.style.width = width + "px";
-        content.style.height = height + "px";
-        content.style.margin = '0';
-        var contentRect = content.getBoundingClientRect();
-        var scrollLeft = previousScrollLeft + centerOffsetX * width / previousClientRect.width - centerOffsetX;
-        if (scrollLeft < 0) {
-            content.style.marginLeft = -scrollLeft + "px";
-            container.scrollLeft = 0;
-        }
-        else {
-            content.style.marginRight = containerRect.right - contentRect.right + scrollLeft + "px";
-            container.scrollLeft = Math.round(scrollLeft);
-            content.style.marginLeft = container.scrollLeft - scrollLeft + "px";
-        }
-        var scrollTop = previousScrollTop + centerOffsetY * height / previousClientRect.height - centerOffsetY;
-        if (scrollTop < 0) {
-            content.style.marginTop = -scrollTop + "px";
-            container.scrollTop = 0;
-        }
-        else {
-            content.style.marginBottom = containerRect.bottom - contentRect.bottom + scrollTop + "px";
-            container.scrollTop = Math.round(scrollTop);
-            content.style.marginTop = container.scrollTop - scrollTop + "px";
-        }
-    }
-    function resetScale(container) {
-        var content = container.firstElementChild;
-        container.scrollLeft = container.scrollTop = 0;
-        content.style.width = content.style.height = content.style.margin = '';
-        container.setAttribute('data-scale', 1);
-    }
-    function zoom(container, ratio, options) {
-        setScale(container, getScale(container) * ratio, options);
-    }
-
-    var calculateMargin = function (previousMargin, delta, containerSize, contentSize) {
-        return clamp(previousMargin - delta, 0, Math.max(previousMargin, containerSize - contentSize)) + 'px';
-    };
     function pan(container, deltaX, deltaY) {
-        var scale = getScale(container);
-        if (scale < 1) {
-            var content = container.firstElementChild;
-            var containerRect = container.getBoundingClientRect();
-            var contentRect = content.getBoundingClientRect();
-            var previousMarginRight = parseFloat(content.style.marginRight) || 0;
-            var previousMarginBottom = parseFloat(content.style.marginBottom) || 0;
-            content.style.marginLeft = calculateMargin(parseFloat(content.style.marginLeft) || 0, deltaX, containerRect.width, contentRect.width);
-            content.style.marginRight = previousMarginRight ? clamp(previousMarginRight + deltaX, 0, previousMarginRight) + 'px' : '0';
-            content.style.marginTop = calculateMargin(parseFloat(content.style.marginTop) || 0, deltaY, containerRect.height, contentRect.height);
-            content.style.marginBottom = previousMarginBottom ? clamp(previousMarginBottom + deltaY, 0, previousMarginBottom) + 'px' : '0';
-        }
-        else {
-            container.scrollLeft += deltaX;
-            container.scrollTop += deltaY;
-        }
+        var content = container.firstElementChild;
+        var _a = getScaleAndOffset(container, content), scale = _a[0], previousOffsetX = _a[1], previousOffsetY = _a[2];
+        setScaleAndOffset(container, content, scale, previousOffsetX + deltaX, previousOffsetY + deltaY);
     }
 
     var preventDefault = function (event) { return event.preventDefault(); };
@@ -176,12 +106,42 @@ var svgPanZoomContainer = (function (exports) {
         return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0);
     }
 
+    function getScale(container) {
+        return getScaleAndOffset(container, container.firstElementChild)[0];
+    }
+    function setScale(container, value, options) {
+        if (options === void 0) { options = {}; }
+        var scale = clamp(value, options.minScale || 1, options.maxScale || 10);
+        var origin = options.origin;
+        var content = container.firstElementChild;
+        var _a = getScaleAndOffset(container, content), previousScale = _a[0], previousOffsetX = _a[1], previousOffsetY = _a[2];
+        if (scale === previousScale) {
+            return;
+        }
+        var offsetScale = scale / previousScale - 1;
+        var previousClientRect = content.getBoundingClientRect();
+        var centerOffsetX = (origin && origin.clientX || 0) - previousClientRect.left;
+        var centerOffsetY = (origin && origin.clientY || 0) - previousClientRect.top;
+        var offsetX = previousOffsetX + offsetScale * centerOffsetX;
+        var offsetY = previousOffsetY + offsetScale * centerOffsetY;
+        setScaleAndOffset(container, content, scale, offsetX, offsetY);
+    }
+    function resetScale(container) {
+        var content = container.firstElementChild;
+        content.style.margin = container.scrollLeft = container.scrollTop = 0;
+        content.removeAttribute('transform');
+        content.style.transform = '';
+    }
+    function zoom(container, ratio, options) {
+        setScale(container, getScale(container) * ratio, options);
+    }
+
     function zoomOnWheel(attributeName, defaultOptions, initializationOptions) {
         if (initializationOptions === void 0) { initializationOptions = {}; }
         if (!initializationOptions.noEmitStyle) {
             (document.head || document.body || document.documentElement)
                 .appendChild(document.createElement('style'))
-                .textContent = "[" + attributeName + "]{overflow:scroll}[" + attributeName + "]>:first-child{width:100%;height:100%;vertical-align:middle}";
+                .textContent = "[" + attributeName + "]{overflow:scroll}[" + attributeName + "]>:first-child{width:100%;height:100%;vertical-align:middle;transform-origin:0 0}";
         }
         addEventListener('wheel', function (event) {
             var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
