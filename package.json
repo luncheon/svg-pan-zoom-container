@@ -27,11 +27,11 @@
     "vanilla-js"
   ],
   "scripts": {
-    "clean": "rimraf docs/ es/ cjs/ iife/",
+    "clean": "rimraf docs/ es/ cjs/ iife/ && mkdir docs",
     "build": "npm-run-all -s clean -p build:*",
     "build:ts": "node build.js",
-    "build:demo-index": "pug demo/index.pug -o docs/ -O package.json",
-    "build:demo-local": "pug demo/local.pug -o docs/ -O package.json",
+    "build:demo-index": "node -e \"require('fs').writeFileSync('docs/index.html',require('pug').compileFile('demo/index.pug')(require('./package.json')),'utf8')\"",
+    "build:demo-local": "node -e \"require('fs').writeFileSync('docs/local.html',require('pug').compileFile('demo/local.pug')(require('./package.json')),'utf8')\"",
     "watch": "npm-run-all -s clean -p watch:*",
     "watch:ts": "sane \"npm run build:ts\" --glob=src/**/*.ts",
     "watch:demo-index": "npm run build:demo-index -- -w",
@@ -40,11 +40,11 @@
   "devDependencies": {
     "gzip-size": "^6.0.0",
     "npm-run-all": "^4.1.5",
-    "pug-cli": "^1.0.0-alpha6",
+    "pug": "^3.0.2",
     "rimraf": "^3.0.2",
-    "rollup": "^2.35.1",
+    "rollup": "^2.40.0",
     "sane": "^4.1.0",
-    "typescript": "^4.1.3",
-    "uglify-js": "^3.12.2"
+    "typescript": "^4.2.3",
+    "uglify-js": "^3.13.0"
   }
 }
