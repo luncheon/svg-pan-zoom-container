@@ -78,10 +78,13 @@ input[type=number] { text-align: right; }
     delete window.inputting
   } else {
     mutations.forEach(function (mutation) {
-      document.getElementById('scale').value = (Math.round(svgPanZoomContainer.getScale(mutation.target) * 10000) / 100).toFixed(2)
-    })
+      document.getElementById('scale').value = (Math.round(svgPanZoomContainer.getScale(mutation.target.parentElement) * 10000) / 100).toFixed(2)
+    });
   }
-}).observe(document.getElementById('container'), { attributes: true, attributeFilter: ['data-scale'] })
+}).observe(document.getElementById('container').firstElementChild, {
+  attributes: true,
+  attributeFilter: ['transform'],
+});
 </script><!-- scroll observation--><script>document
   .getElementById('container')
   .addEventListener('scroll', function () {
