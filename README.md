@@ -1,7 +1,12 @@
 # svg-pan-zoom-container
 
+[![BundlePhobia](https://badgen.net/bundlephobia/minzip/svg-pan-zoom-container)](https://bundlephobia.com/result?p=svg-pan-zoom-container)
+[![License: WTFPL](https://badgen.net/npm/license/svg-pan-zoom-container)](http://www.wtfpl.net)
+[![npm](https://img.shields.io/npm/dm/svg-pan-zoom-container.svg?style=popout-square&label=npm&colorB=orange)](https://www.npmjs.com/package/svg-pan-zoom-container)
+[![jsDelivr](https://data.jsdelivr.com/v1/package/npm/svg-pan-zoom-container/badge?style=rounded)](https://www.jsdelivr.com/package/npm/svg-pan-zoom-container)
+
 A vanilla-js module for adding zoom-on-wheel and pan-on-drag behavior to inline SVG elements.  
-Very easy to use and lightweight (1.5kB minified gzipped) with no dependencies.
+No need to write scripts. Just markup.
 
 [Demo](https://luncheon.github.io/svg-pan-zoom-container/index.html)
 
@@ -111,7 +116,7 @@ observer.observe(container.firstElementChild, {
 
 ## API
 
-This module provides some functions for scripting to control pan and zoom behavior.  
+This module provides some functions for scripting to control pan and zoom behavior.
 
 ### API usage
 
