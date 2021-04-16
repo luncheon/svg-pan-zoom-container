@@ -103,7 +103,8 @@ var svgPanZoomContainer = (function (exports) {
         });
     }
     function isPanButtonPressed(event, options, defaultOptions) {
-        return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0);
+        return ((!options.modifier || event.getModifierState(options.modifier)) &&
+            event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0));
     }
 
     function getScale(container) {

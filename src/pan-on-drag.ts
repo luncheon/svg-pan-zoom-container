@@ -3,6 +3,7 @@ import { findTargetAndParseOptions } from './utils'
 
 export interface PanOnDragOptions {
   readonly button: 'left' | 'right'
+  readonly modifier?: 'Alt' | 'Control' | 'Meta' | 'Shift'
 }
 
 const preventDefault = (event: Event) => event.preventDefault()
@@ -44,6 +45,9 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
   })
 }
 
-function isPanButtonPressed(event: MouseEvent, options: Record<string, string>, defaultOptions: PanOnDragOptions) {
-  return event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0)
+function isPanButtonPressed(event: MouseEvent, options: Partial<PanOnDragOptions>, defaultOptions: PanOnDragOptions) {
+  return (
+    (!options.modifier || event.getModifierState(options.modifier)) &&
+    event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0)
+  )
 }

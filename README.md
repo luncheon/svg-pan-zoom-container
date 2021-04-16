@@ -89,9 +89,10 @@ Multiple options should be separated by semicolon (;).
 
 ### Options for `data-pan-on-drag`
 
-| Name   | Type              | Default | Description                  |
-| ------ | ----------------- | ------- | ---------------------------- |
-| button | "left" \| "right" | "left"  | Mouse button to drag to pan. |
+| Name    | Type                                          | Default | Description                                         |
+| ------- | --------------------------------------------- | ------- | --------------------------------------------------- |
+| button  | "left" \| "right"                             | "left"  | Mouse button to drag to pan.                        |
+| modifier| "" \| "Alt" \| "Control" \| "Meta" \| "Shift" | ""      | Drag to pan only when this modifier key is pressed. |
 
 
 ## Observation
