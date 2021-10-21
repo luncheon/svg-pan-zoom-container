@@ -187,4 +187,4 @@ var svgPanZoomContainer = (function (exports) {
 
     return exports;
 
-}({}));
+})({});

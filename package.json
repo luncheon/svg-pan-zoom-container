@@ -42,9 +42,9 @@
     "npm-run-all": "^4.1.5",
     "pug": "^3.0.2",
     "rimraf": "^3.0.2",
-    "rollup": "^2.45.2",
-    "sane": "^4.1.0",
-    "typescript": "^4.2.4",
-    "uglify-js": "^3.13.4"
+    "rollup": "^2.58.0",
+    "sane": "^5.0.1",
+    "typescript": "^4.3.5",
+    "uglify-js": "^3.13.10"
   }
 }
