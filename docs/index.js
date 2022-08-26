@@ -12,16 +12,16 @@ var svgPanZoomContainer = (function (exports) {
     function setScaleAndOffset(container, content, scale, offsetX, offsetY) {
         var scrollX = Math.round(Math.max(offsetX, 0));
         var scrollY = Math.round(Math.max(offsetY, 0));
-        content.setAttribute('transform', content.style.transform = "matrix(" + scale + ",0,0," + scale + "," + (scrollX - offsetX) + "," + (scrollY - offsetY) + ")");
+        content.setAttribute('transform', content.style.transform = "matrix(".concat(scale, ",0,0,").concat(scale, ",").concat(scrollX - offsetX, ",").concat(scrollY - offsetY, ")"));
         content.style.margin = 0;
         container.scrollLeft = scrollX;
         container.scrollTop = scrollY;
         if (container.scrollLeft !== scrollX) {
-            content.style.marginRight = scrollX + "px";
+            content.style.marginRight = "".concat(scrollX, "px");
             container.scrollLeft = scrollX;
         }
         if (container.scrollTop !== scrollY) {
-            content.style.marginBottom = scrollY + "px";
+            content.style.marginBottom = "".concat(scrollY, "px");
             container.scrollTop = scrollY;
         }
     }
@@ -48,7 +48,7 @@ var svgPanZoomContainer = (function (exports) {
         return options;
     }
     function findTargetAndParseOptions(element, attributeName) {
-        var target = closest(element, "[" + attributeName + "]");
+        var target = closest(element, "[".concat(attributeName, "]"));
         return target instanceof HTMLElement ? [target, parseOptions(target.getAttribute(attributeName))] : [];
     }
     function noop() { }
@@ -142,7 +142,7 @@ var svgPanZoomContainer = (function (exports) {
         if (!initializationOptions.noEmitStyle) {
             (document.head || document.body || document.documentElement)
                 .appendChild(document.createElement('style'))
-                .textContent = "[" + attributeName + "]{overflow:scroll}[" + attributeName + "]>:first-child{width:100%;height:100%;vertical-align:middle;transform-origin:0 0}";
+                .textContent = "[".concat(attributeName, "]{overflow:scroll}[").concat(attributeName, "]>:first-child{width:100%;height:100%;vertical-align:middle;transform-origin:0 0}");
         }
         addEventListener('wheel', function (event) {
             var _a = findTargetAndParseOptions(event.target, attributeName), target = _a[0], options = _a[1];
@@ -157,7 +157,7 @@ var svgPanZoomContainer = (function (exports) {
             }
         }, nonPassive);
         addEventListener('resize', function () {
-            var targets = document.querySelectorAll("[" + attributeName + "]");
+            var targets = document.querySelectorAll("[".concat(attributeName, "]"));
             for (var i = 0; i < targets.length; i++) {
                 var target = targets[i];
                 if (target instanceof HTMLElement) {
