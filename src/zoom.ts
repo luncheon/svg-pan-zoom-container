@@ -9,11 +9,9 @@ export interface ZoomOptions {
   readonly maxScale?: number
 }
 
-export function getScale(container: HTMLElement) {
-  return getScaleAndOffset(container, container.firstElementChild as SVGSVGElement)[0]
-}
+export const getScale = (container: HTMLElement) => getScaleAndOffset(container, container.firstElementChild as SVGSVGElement)[0]
 
-export function setScale(container: HTMLElement, value: number, options: ZoomOptions = {}) {
+export const setScale = (container: HTMLElement, value: number, options: ZoomOptions = {}) => {
   const scale = clamp(value, options.minScale || 1, options.maxScale || 10)
   const origin = options.origin
   const content = container.firstElementChild as SVGSVGElement
@@ -30,13 +28,11 @@ export function setScale(container: HTMLElement, value: number, options: ZoomOpt
   setScaleAndOffset(container, content, scale, offsetX, offsetY)
 }
 
-export function resetScale(container: HTMLElement) {
+export const resetScale = (container: HTMLElement) => {
   const content = container.firstElementChild as SVGSVGElement
   content.style.margin = container.scrollLeft = container.scrollTop = 0 as number & string
   content.removeAttribute('transform')
   content.style.transform = ''
 }
 
-export function zoom(container: HTMLElement, ratio: number, options?: ZoomOptions) {
-  setScale(container, getScale(container) * ratio, options)
-}
+export const zoom = (container: HTMLElement, ratio: number, options?: ZoomOptions) => setScale(container, getScale(container) * ratio, options)

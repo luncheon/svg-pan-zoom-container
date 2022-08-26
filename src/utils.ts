@@ -1,15 +1,11 @@
-const DomMatrix = window.DOMMatrix || window.WebKitCSSMatrix || (window as any).MSCSSMatrix
+export const clamp = (value: number, min: number, max: number): number => value < min ? min : value > max ? max : value
 
-export function clamp(value: number, min: number, max: number): number {
-  return value < min ? min : value > max ? max : value
-}
-
-export function getScaleAndOffset(container: Element, content: HTMLElement | SVGElement): [number, number, number] {
-  const matrix = new DomMatrix(content.style.transform)
+export const getScaleAndOffset = (container: Element, content: HTMLElement | SVGElement): [number, number, number] => {
+  const matrix = new DOMMatrix(content.style.transform)
   return [matrix.a, container.scrollLeft - matrix.e, container.scrollTop - matrix.f]
 }
 
-export function setScaleAndOffset(container: Element, content: HTMLElement | SVGElement, scale: number, offsetX: number, offsetY: number) {
+export const setScaleAndOffset = (container: Element, content: HTMLElement | SVGElement, scale: number, offsetX: number, offsetY: number) => {
   const scrollX = Math.round(Math.max(offsetX, 0))
   const scrollY = Math.round(Math.max(offsetY, 0))
 
@@ -28,22 +24,7 @@ export function setScaleAndOffset(container: Element, content: HTMLElement | SVG
   }
 }
 
-const matches =
-  Element.prototype.matches ||
-  Element.prototype.webkitMatchesSelector ||
-  Element.prototype.msMatchesSelector
-
-const closest: (element: Element | null, selector: string) => Element | null =
-  !!Element.prototype.closest
-  ? (element, selector) => element && element.closest(selector)
-  : (element, selector) => {
-    while (element && !matches.call(element, selector)) {
-      element = element.parentNode instanceof Element ? element.parentNode : null
-    }
-    return element
-  }
-
-export function parseOptions(optionsString: string | undefined | null): Record<string, string> {
+export const parseOptions = (optionsString: string | undefined | null): Record<string, string> => {
   const options: Record<string, string> = {}
   if (optionsString) {
     for (const s of optionsString.split(';')) {
@@ -54,26 +35,7 @@ export function parseOptions(optionsString: string | undefined | null): Record<s
   return options
 }
 
-export function findTargetAndParseOptions(element: Element | null, attributeName: string): [HTMLElement, Record<string, string>] | [] {
-  const target = closest(element, `[${attributeName}]`)
+export const findTargetAndParseOptions = (element: Element | null, attributeName: string): [HTMLElement, Record<string, string>] | [] => {
+  const target = element?.closest(`[${attributeName}]`)
   return target instanceof HTMLElement ? [target, parseOptions(target.getAttribute(attributeName))] : []
 }
-
-function noop() {}
-
-let passiveSupported = false;
-
-try {
-  const options = Object.defineProperty({}, 'passive', {
-    get() {
-      passiveSupported = true;
-    }
-  })
-
-  addEventListener('t', noop, options);
-  removeEventListener('t', noop, options);
-} catch(err) {
-  passiveSupported = false;
-}
-
-export const nonPassive: AddEventListenerOptions | undefined = passiveSupported ? { passive: false } : undefined;

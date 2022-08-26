@@ -1,11 +1,11 @@
 import { zoom, ZoomOptions } from './zoom'
-import { findTargetAndParseOptions, nonPassive, parseOptions } from './utils'
+import { findTargetAndParseOptions, parseOptions } from './utils'
 
 export interface ZoomOnWheelOptions extends ZoomOptions {
   readonly zoomAmount: number
 }
 
-export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOptions, initializationOptions: { readonly noEmitStyle?: boolean } = {}) {
+export const zoomOnWheel = (attributeName: string, defaultOptions: ZoomOnWheelOptions, initializationOptions: { readonly noEmitStyle?: boolean } = {}) => {
   if (!initializationOptions.noEmitStyle) {
     (document.head || document.body || document.documentElement)
       .appendChild(document.createElement('style'))
@@ -23,7 +23,7 @@ export function zoomOnWheel(attributeName: string, defaultOptions: ZoomOnWheelOp
       })
       event.preventDefault()
     }
-  }, nonPassive)
+  }, { passive: false })
 
   addEventListener('resize', () => {
     const targets = document.querySelectorAll(`[${attributeName}]`)

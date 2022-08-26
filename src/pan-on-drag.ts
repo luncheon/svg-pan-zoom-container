@@ -6,7 +6,7 @@ export interface PanOnDragOptions {
   readonly modifier?: 'Alt' | 'Control' | 'Meta' | 'Shift'
 }
 
-export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOptions) {
+export const panOnDrag = (attributeName: string, defaultOptions: PanOnDragOptions) => {
   addEventListener('mousedown', event => {
     if (event.button !== 0 && event.button !== 2) {
       return
@@ -45,9 +45,6 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
   })
 }
 
-function isPanButtonPressed(event: MouseEvent, options: Partial<PanOnDragOptions>, defaultOptions: PanOnDragOptions) {
-  return (
-    (!options.modifier || event.getModifierState(options.modifier)) &&
-    event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0)
-  )
-}
+const isPanButtonPressed = (event: MouseEvent, options: Partial<PanOnDragOptions>, defaultOptions: PanOnDragOptions) =>
+  (!options.modifier || event.getModifierState(options.modifier)) &&
+  event.button === ((options.button || defaultOptions.button) === 'right' ? 2 : 0)

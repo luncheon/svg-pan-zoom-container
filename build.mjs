@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { rollup } from 'rollup'
-import { minify } from 'uglify-js'
+import { minify } from 'terser'
 import { gzipSize } from 'gzip-size'
 import fs from 'node:fs'
 import tsConfig from './tsconfig.json' assert { type: "json" }
@@ -16,14 +16,6 @@ const options = {
       format: 'iife',
       file: 'iife/index.js',
       name: packageJson.name.replace(/-[a-z]/g, $0 => $0[1].toUpperCase()),
-    },
-  },
-  minify: {
-    compress: {
-      passes: 4,
-    },
-    output: {
-      semicolons: false,
     },
   },
 }
@@ -67,26 +59,16 @@ tsBuild(parsedConfig.fileNames, { ...parsedConfig.options, module: ts.ModuleKind
 console.log(`[${now()}] building iife...`)
 rollup(options.rollup)
   .then(bundle => bundle.write(options.rollup.output))
-  .then(output => {
+  .then(async output => {
     console.log(`[${now()}] building minified iife...`)
     if (output.output.length !== 1) {
       throw Error(`output length is ${output.length} but 1 is required`)
     }
-    const minification = minify(output.output[0].code, options.minify)
-    if (minification.warnings) {
-      console.warn(minification.warnings)
-    }
-    if (minification.error) {
-      throw minification.error
-    }
-    if (minification.code) {
-      fs.writeFileSync(options.rollup.output.file.replace(/\.js$/, '.min.js'), minification.code, 'utf8')
-      fs.existsSync('docs') || fs.mkdirSync('docs')
-      fs.writeFileSync('docs/index.js', output.output[0].code, 'utf8')
-      fs.writeFileSync('docs/index.min.js', minification.code, 'utf8')
-      return gzipSize(minification.code)
-    } else {
-      throw Error('no code emitted')
-    }
+    const { code } = await minify({ [output.output[0].fileName]: output.output[0].code }, { compress: { passes: 3 } })
+    fs.writeFileSync(options.rollup.output.file.replace(/\.js$/, '.min.js'), code, 'utf8')
+    fs.existsSync('docs') || fs.mkdirSync('docs')
+    fs.writeFileSync('docs/index.js', output.output[0].code, 'utf8')
+    fs.writeFileSync('docs/index.min.js', code, 'utf8')
+    return gzipSize(code)
   })
   .then(gzippedSize => console.log(`[${now()}] build complete\nminified gzipped iife module size: ${gzippedSize} B (${gzippedSize / 1024} kB)\n`))
