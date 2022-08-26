@@ -6,8 +6,6 @@ export interface PanOnDragOptions {
   readonly modifier?: 'Alt' | 'Control' | 'Meta' | 'Shift'
 }
 
-const preventDefault = (event: Event) => event.preventDefault()
-
 export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOptions) {
   addEventListener('mousedown', event => {
     if (event.button !== 0 && event.button !== 2) {
@@ -33,10 +31,12 @@ export function panOnDrag(attributeName: string, defaultOptions: PanOnDragOption
       event.preventDefault()
     }
 
+    const preventDefault = (event: Event) => event.preventDefault()
+
     const onMouseUp = () => {
       removeEventListener('mouseup', onMouseUp)
       removeEventListener('mousemove', onMouseMove)
-      removeEventListener('contextmenu', preventDefault)
+      setTimeout(() => removeEventListener('contextmenu', preventDefault))
     }
 
     addEventListener('mouseup', onMouseUp)

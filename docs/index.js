@@ -73,7 +73,6 @@ var svgPanZoomContainer = (function (exports) {
         setScaleAndOffset(container, content, scale, previousOffsetX + deltaX, previousOffsetY + deltaY);
     }
 
-    var preventDefault = function (event) { return event.preventDefault(); };
     function panOnDrag(attributeName, defaultOptions) {
         addEventListener('mousedown', function (event) {
             if (event.button !== 0 && event.button !== 2) {
@@ -92,10 +91,11 @@ var svgPanZoomContainer = (function (exports) {
                 previousClientY = event.clientY;
                 event.preventDefault();
             };
+            var preventDefault = function (event) { return event.preventDefault(); };
             var onMouseUp = function () {
                 removeEventListener('mouseup', onMouseUp);
                 removeEventListener('mousemove', onMouseMove);
-                removeEventListener('contextmenu', preventDefault);
+                setTimeout(function () { return removeEventListener('contextmenu', preventDefault); });
             };
             addEventListener('mouseup', onMouseUp);
             addEventListener('mousemove', onMouseMove);
