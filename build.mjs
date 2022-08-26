@@ -1,3 +1,11 @@
+import ts from 'typescript'
+import { rollup } from 'rollup'
+import { minify } from 'uglify-js'
+import { gzipSize } from 'gzip-size'
+import fs from 'node:fs'
+import tsConfig from './tsconfig.json' assert { type: "json" }
+import packageJson from './package.json' assert { type: "json" }
+
 const now = () => new Date().toLocaleTimeString()
 console.log(`[${now()}] build started`)
 
@@ -7,7 +15,7 @@ const options = {
     output: {
       format: 'iife',
       file: 'iife/index.js',
-      name: require('./package.json').name.replace(/-[a-z]/g, $0 => $0[1].toUpperCase()),
+      name: packageJson.name.replace(/-[a-z]/g, $0 => $0[1].toUpperCase()),
     },
   },
   minify: {
@@ -20,12 +28,6 @@ const options = {
   },
 }
 
-const ts = require('typescript')
-const { rollup } = require('rollup')
-const { minify } = require('uglify-js')
-const gzipSize = require('gzip-size')
-const fs = require('fs')
-
 const tsDiagnosticLoggers = {
   [ts.DiagnosticCategory.Error]: console.error,
   [ts.DiagnosticCategory.Warning]: console.warn,
@@ -33,9 +35,9 @@ const tsDiagnosticLoggers = {
   [ts.DiagnosticCategory.Message]: console.info,
 }
 
-const tsConfig = ts.parseJsonConfigFileContent(require('./tsconfig.json'), ts.sys, '.')
-if (tsConfig.errors.length) {
-  throw tsConfig.errors
+const parsedConfig = ts.parseJsonConfigFileContent(tsConfig, ts.sys, '.')
+if (parsedConfig.errors.length) {
+  throw parsedConfig.errors
 }
 
 function tsBuild(fileNames, options) {
@@ -57,10 +59,10 @@ function tsBuild(fileNames, options) {
 }
 
 console.log(`[${now()}] building es module...`)
-tsBuild(tsConfig.fileNames, tsConfig.options)
+tsBuild(parsedConfig.fileNames, parsedConfig.options)
 
 console.log(`[${now()}] building cjs module...`)
-tsBuild(tsConfig.fileNames, { ...tsConfig.options, module: ts.ModuleKind.CommonJS, outDir: 'cjs' })
+tsBuild(parsedConfig.fileNames, { ...parsedConfig.options, module: ts.ModuleKind.CommonJS, outDir: 'cjs' })
 
 console.log(`[${now()}] building iife...`)
 rollup(options.rollup)

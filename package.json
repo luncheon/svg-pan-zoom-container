@@ -29,7 +29,7 @@
   "scripts": {
     "clean": "rimraf docs/ es/ cjs/ iife/ && mkdir docs",
     "build": "npm-run-all -s clean -p build:*",
-    "build:ts": "node build.js",
+    "build:ts": "node build.mjs",
     "build:demo-index": "node -e \"require('fs').writeFileSync('docs/index.html',require('pug').compileFile('demo/index.pug')(require('./package.json')),'utf8')\"",
     "build:demo-local": "node -e \"require('fs').writeFileSync('docs/local.html',require('pug').compileFile('demo/local.pug')(require('./package.json')),'utf8')\"",
     "watch": "npm-run-all -s clean -p watch:*",
@@ -38,7 +38,7 @@
     "watch:demo-local": "npm run build:demo-local -- -w"
   },
   "devDependencies": {
-    "gzip-size": "^6.0.0",
+    "gzip-size": "^7.0.0",
     "npm-run-all": "^4.1.5",
     "pug": "^3.0.2",
     "rimraf": "^3.0.2",
